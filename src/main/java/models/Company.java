@@ -18,13 +18,54 @@ public class Company {
     @NonNull
     private String name;
 
-    @Column(name = "telefone",length = 20,unique = true)
+    @Column(name = "telephone",length = 20,unique = true)
     @NonNull
-    private String telefone;
+    private String telephone;
 
     @Column(name = "email",length = 75,unique = true)
     @NonNull
     private String email;
 
-    //@Column(name = "")
+    public Company() {
+    }
+
+
+    public Company(int id, @NonNull String name, @NonNull String telephone, @NonNull String email) {
+        this.id = id;
+        this.name = name;
+        this.telephone = telephone;
+        this.email = email;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public @NonNull String getName() {
+        return name;
+    }
+
+    public void setName(@NonNull String name) {
+        this.name = name;
+    }
+
+    public @NonNull String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(@NonNull String telephone) {
+        this.telephone = telephone;
+    }
+
+    public @NonNull String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@NonNull String email) {
+        this.email = email;
+    }
 }
