@@ -44,9 +44,6 @@ public class UserProfileforAdmin {
     @Column(name = "updated_at")
     private LocalTime updatedAt;
 
-    public UserProfileforAdmin() {
-    }
-
 
     public UserProfileforAdmin(Long id, @NonNull String userName, @NonNull String email, @NonNull String phone, @NonNull Role userRole, LocalDate memberSince, LocalTime createdAt, LocalTime updatedAt) {
         this.id = id;
@@ -57,6 +54,10 @@ public class UserProfileforAdmin {
         this.memberSince = memberSince;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public UserProfileforAdmin() {
+
     }
 
     public @NonNull String getUserName() {
