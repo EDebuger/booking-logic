@@ -1,5 +1,5 @@
 package enums;
 
 public enum BookingStatus {
-    PENDING,COMPLETED,MISSED
+    PENDING,COMPLETED,CANCELED
 }

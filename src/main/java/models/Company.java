@@ -12,7 +12,7 @@ public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id; //pk will be referenced by restaurants 1/M
 
     @Column(name = "name",length = 50,unique = true)
     @NonNull
@@ -30,18 +30,18 @@ public class Company {
     }
 
 
-    public Company(int id, @NonNull String name, @NonNull String telephone, @NonNull String email) {
+    public Company(Long id, @NonNull String name, @NonNull String telephone, @NonNull String email) {
         this.id = id;
         this.name = name;
         this.telephone = telephone;
         this.email = email;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

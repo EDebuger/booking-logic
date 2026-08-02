@@ -15,7 +15,7 @@ public class Booking { // every booking, current and past can be kept in one tab
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "restaurant_name")
+    @Column(name = "restaurant_name",length = 50,unique = false)
     @NonNull
     private String restaurantName;
 
