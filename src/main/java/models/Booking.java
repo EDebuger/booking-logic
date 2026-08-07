@@ -15,6 +15,11 @@ public class Booking { // every booking, current and past can be kept in one tab
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @NonNull
+    private User userId;
+
     @Column(name = "restaurant_name",length = 50,unique = false)
     @NonNull
     private String restaurantName;
@@ -39,8 +44,9 @@ public class Booking { // every booking, current and past can be kept in one tab
     }
 
 
-    public Booking(Long id, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, BookingStatus status) {
+    public Booking(Long id, @NonNull User userId ,@NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, BookingStatus status) {
         this.id = id;
+        this.userId = userId;
         this.restaurantName = restaurantName;
         this.tableNum = tableNum;
         this.partySize = partySize;
@@ -55,6 +61,14 @@ public class Booking { // every booking, current and past can be kept in one tab
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public @NonNull User getUserId() {
+        return userId;
+    }
+
+    public void setUserId(@NonNull User userId) {
+        this.userId = userId;
     }
 
     public @NonNull String getRestaurantName() {

@@ -38,21 +38,18 @@ public class UserProfileforAdmin {
     @Column(name = "member_since")
     private LocalDate memberSince;
 
-    @Column(name = "created_at")
-    private LocalTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalTime updatedAt;
+    private LocalDate updatedAt;
 
 
-    public UserProfileforAdmin(Long id, @NonNull String userName, @NonNull String email, @NonNull String phone, @NonNull Role userRole, LocalDate memberSince, LocalTime createdAt, LocalTime updatedAt) {
+    public UserProfileforAdmin(Long id, @NonNull String userName, @NonNull String email, @NonNull String phone, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
         this.id = id;
         this.userName = userName;
         this.email = email;
         this.phone = phone;
         this.userRole = userRole;
         this.memberSince = memberSince;
-        this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
@@ -88,15 +85,11 @@ public class UserProfileforAdmin {
         return memberSince;
     }
 
-    public LocalTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalTime getUpdatedAt() {
+    public LocalDate getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalTime updatedAt) {
+    public void setUpdatedAt(LocalDate updatedAt) {
         this.updatedAt = updatedAt;
     }
 }
