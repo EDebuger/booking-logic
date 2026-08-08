@@ -38,13 +38,23 @@ public class Booking { // every booking, current and past can be kept in one tab
     private LocalDate bookingDate;
 
     @Column(name = "status")
+    @NonNull
+    @Enumerated
     private BookingStatus status;
+
+    @Column(name = "created_at")
+    @NonNull
+    private LocalDate createdAt;
+
+    @Column(name = "updated_at")
+    @NonNull
+    private LocalDate updatedAt;
+
 
     public Booking() {
     }
 
-
-    public Booking(Long id, @NonNull User userId ,@NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, BookingStatus status) {
+    public Booking(Long id, @NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, @NonNull BookingStatus status, @NonNull LocalDate createdAt, @NonNull LocalDate updatedAt) {
         this.id = id;
         this.userId = userId;
         this.restaurantName = restaurantName;
@@ -53,7 +63,10 @@ public class Booking { // every booking, current and past can be kept in one tab
         this.dateMade = dateMade;
         this.bookingDate = bookingDate;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
+
 
     public Long getId() {
         return id;
@@ -117,5 +130,21 @@ public class Booking { // every booking, current and past can be kept in one tab
 
     public void setStatus(BookingStatus status) {
         this.status = status;
+    }
+
+    public @NonNull LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(@NonNull LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public @NonNull LocalDate getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(@NonNull LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

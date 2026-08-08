@@ -1,4 +1,4 @@
-package models;
+package dtos;
 
 import enums.ServiceType;
 import jakarta.persistence.*;
@@ -8,8 +8,8 @@ import java.time.LocalTime;
 import org.jspecify.annotations.NonNull;
 
 @Entity
-@Table(name = "restaurants") // a join table with bookings will be formed
-public class Restaurant {
+@Table(name = "restaurants")    // model will be shown like this in search on the website
+public class RestaurantPresentationForUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,11 +45,11 @@ public class Restaurant {
     private int subOf;
 
 
-    public Restaurant() {
+    public RestaurantPresentationForUser() {
     }
 
 
-    public Restaurant(Long id, @NonNull String name, @NonNull String adress, @NonNull String postalCode, @NonNull ServiceType serviceType, @NonNull String description, @NonNull Long priceRange, @NonNull int subOf) {
+    public RestaurantPresentationForUser(Long id, @NonNull String name, @NonNull String adress, @NonNull String postalCode, @NonNull ServiceType serviceType, @NonNull String description, @NonNull Long priceRange, @NonNull int subOf) {
         this.id = id;
         this.name = name;
         this.adress = adress;
@@ -59,68 +59,36 @@ public class Restaurant {
         this.priceRange = priceRange;
         this.subOf = subOf; //subsidary of company
     }
-
-    public @NonNull String getPostalCode() {
-        return postalCode;
-    }
-
-    public void setPostalCode(@NonNull String postalCode) {
-        this.postalCode = postalCode;
+        // will only get info, not change anything
+    public @NonNull ServiceType getServiceType() {
+        return serviceType;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public @NonNull String getName() {
         return name;
-    }
-
-    public void setName(@NonNull String name) {
-        this.name = name;
     }
 
     public @NonNull String getAdress() {
         return adress;
     }
 
-    public void setAdress(@NonNull String adress) {
-        this.adress = adress;
-    }
-
-    public @NonNull ServiceType getServiceType() {
-        return serviceType;
-    }
-
-    public void setServiceType(@NonNull ServiceType serviceType) {
-        this.serviceType = serviceType;
+    public @NonNull String getPostalCode() {
+        return postalCode;
     }
 
     public @NonNull String getDescription() {
         return description;
     }
 
-    public void setDescription(@NonNull String description) {
-        this.description = description;
-    }
-
     public @NonNull Long getPriceRange() {
         return priceRange;
     }
 
-    public void setPriceRange(@NonNull Long priceRange) {
-        this.priceRange = priceRange;
-    }
-
     public @NonNull int getSubOf() {
         return subOf;
-    }
-
-    public void setSubOf(@NonNull int subOf) {
-        this.subOf = subOf;
     }
 }
