@@ -1,5 +1,7 @@
 package repositories;
 
+import dtos.UserProfileforAdmin;
+import dtos.UserProfileforUser;
 import enums.Role;
 import models.User;
 import org.jspecify.annotations.NonNull;
@@ -11,5 +13,5 @@ public interface UserRepository extends JpaRepository<User,Long>{
 
     User findByUserName(@NonNull String name);
 
-    List<User> findByUserRole(@NonNull Role userRole);
+    List<UserProfileforAdmin> findByUserRole(@NonNull Role userRole);
 }
