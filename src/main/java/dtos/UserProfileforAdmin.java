@@ -57,12 +57,11 @@ public class UserProfileforAdmin {
 
     }
 
-    public @NonNull String getUserName() {
-        return userName;
-    }
-
     public Long getId() {
         return id;
+    }
+    public @NonNull String getUserName() {
+        return userName;
     }
 
     public @NonNull String getPhone() {
@@ -72,6 +71,7 @@ public class UserProfileforAdmin {
     public @NonNull String getEmail() {
         return email;
     }
+
 
     public @NonNull Role getUserRole() {
         return userRole;
