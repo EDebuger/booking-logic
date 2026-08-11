@@ -1,16 +1,16 @@
-package models;
+package dtos;
 import enums.BookingStatus;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import models.User;
 import org.jspecify.annotations.NonNull;
 
-@Entity
 @Table(name = "bookings")
-public class Booking { // every booking, current and past can be kept in one table
-                        // have dedicated views for each
+public class BookingUserDto { // every booking, current and past can be kept in one table
+    // have dedicated views for each
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,10 +47,10 @@ public class Booking { // every booking, current and past can be kept in one tab
     private LocalDate updatedAt;
 
 
-    public Booking() {
+    public BookingUserDto() {
     }
 
-    public Booking(Long id, @NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, @NonNull BookingStatus status, @NonNull LocalDate updatedAt) {
+    public BookingUserDto(Long id, @NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, @NonNull BookingStatus status, @NonNull LocalDate updatedAt) {
         this.id = id;
         this.userId = userId;
         this.restaurantName = restaurantName;
@@ -67,71 +67,44 @@ public class Booking { // every booking, current and past can be kept in one tab
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public @NonNull User getUserId() {
         return userId;
     }
 
-    public void setUserId(@NonNull User userId) {
-        this.userId = userId;
-    }
 
     public @NonNull String getRestaurantName() {
         return restaurantName;
     }
 
-    public void setRestaurantName(@NonNull String restaurantName) {
-        this.restaurantName = restaurantName;
-    }
 
     public @NonNull int getTableNum() {
         return tableNum;
     }
 
-    public void setTableNum(@NonNull int tableNum) {
-        this.tableNum = tableNum;
-    }
 
     public int getPartySize() {
         return partySize;
     }
 
-    public void setPartySize(int partySize) {
-        this.partySize = partySize;
-    }
 
     public LocalDate getDateMade() {
         return dateMade;
     }
 
-    public void setDateMade(LocalDate dateMade) {
-        this.dateMade = dateMade;
-    }
 
     public LocalDate getBookingDate() {
         return bookingDate;
     }
 
-    public void setBookingDate(LocalDate bookingDate) {
-        this.bookingDate = bookingDate;
-    }
 
     public BookingStatus getStatus() {
         return status;
     }
 
-    public void setStatus(BookingStatus status) {
-        this.status = status;
-    }
 
     public @NonNull LocalDate getUpdatedAt() {
         return updatedAt;
     }
-
-    public void setUpdatedAt(@NonNull LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }
+

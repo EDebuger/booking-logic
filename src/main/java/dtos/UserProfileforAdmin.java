@@ -10,7 +10,6 @@ import org.jspecify.annotations.NonNull;
 
 import static enums.Role.*;
 
-@Entity
 @Table(name = "users")
 public class UserProfileforAdmin {
 

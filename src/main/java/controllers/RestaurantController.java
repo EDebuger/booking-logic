@@ -1,13 +1,13 @@
 package controllers;
 
 import enums.ServiceType;
-import models.Restaurant;
 import dtos.RestaurantPresentationForUser;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import repositories.RestaurantRepository;
+import services.RestaurantService;
 
 import java.util.*;
 
@@ -16,21 +16,23 @@ import java.util.*;
 public class RestaurantController {
 
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantService restaurantService;
 
-    public RestaurantController(RestaurantRepository restaurantRepository) {
+    public RestaurantController(RestaurantRepository restaurantRepository, RestaurantService restaurantService) {
         this.restaurantRepository = restaurantRepository;
+        this.restaurantService = restaurantService;
     }
 
     /*---------------------------Getters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
-    @GetMapping("/getAll")
-    public @ResponseBody ResponseEntity<List<Restaurant>> getAll() { // if response is ok
-        return ResponseEntity.ok(restaurantRepository.findAll()); // will return a list
+    @GetMapping("/getAll") // called immediately on main page?
+    public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getAll() { // if response is ok
+        return ResponseEntity.ok(restaurantService.getAll()); // will return a list
     }
 
-    @GetMapping("/getById{id}")
-    public @ResponseBody ResponseEntity<Restaurant> getById(@PathVariable(value = "id") Long id ) {
-        return ResponseEntity.of(restaurantRepository.findById(id));
+    @GetMapping("/getById{id}") // for frontend use?
+    public @ResponseBody ResponseEntity<Optional<RestaurantPresentationForUser>> getById(@PathVariable(value = "id") Long id ) {
+        return ResponseEntity.of(Optional.ofNullable(restaurantService.getById(id)));
     } //gets by id
 
     @GetMapping("/getByName{name}")
@@ -70,6 +72,22 @@ public class RestaurantController {
     // what to put in...
 
     /*---------------------------Setters------------------------------------------*/
+    /*----------------------------------------------------------------------------*/
+
+    /*---------------------------Deleters-----------------------------------------*/
+    /*----------------------------------------------------------------------------*/
+
+    @DeleteMapping("/deleteById{id}")
+    public ResponseEntity<String> deleteRestaurant(@PathVariable Long id) {
+        try {
+            restaurantService.deleteRestaurantById(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Restaurant deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
+        }
+    }
+
+    /*---------------------------Deleters-----------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
 }

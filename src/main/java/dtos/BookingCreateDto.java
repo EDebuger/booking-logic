@@ -1,16 +1,16 @@
-package models;
+package dtos;
 import enums.BookingStatus;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import models.User;
 import org.jspecify.annotations.NonNull;
 
-@Entity
 @Table(name = "bookings")
-public class Booking { // every booking, current and past can be kept in one table
-                        // have dedicated views for each
+public class BookingCreateDto { // every booking, current and past can be kept in one table
+    // have dedicated views for each
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,10 +47,10 @@ public class Booking { // every booking, current and past can be kept in one tab
     private LocalDate updatedAt;
 
 
-    public Booking() {
+    public BookingCreateDto() {
     }
 
-    public Booking(Long id, @NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, @NonNull BookingStatus status, @NonNull LocalDate updatedAt) {
+    public BookingCreateDto(Long id, @NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, @NonNull BookingStatus status,  @NonNull LocalDate updatedAt) {
         this.id = id;
         this.userId = userId;
         this.restaurantName = restaurantName;
@@ -134,4 +134,5 @@ public class Booking { // every booking, current and past can be kept in one tab
     public void setUpdatedAt(@NonNull LocalDate updatedAt) {
         this.updatedAt = updatedAt;
     }
+
 }

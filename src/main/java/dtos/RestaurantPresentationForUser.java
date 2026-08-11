@@ -7,7 +7,6 @@ import java.time.LocalTime;
 
 import org.jspecify.annotations.NonNull;
 
-@Entity
 @Table(name = "restaurants")    // model will be shown like this in search on the website
 public class RestaurantPresentationForUser {
 
