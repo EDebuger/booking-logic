@@ -1,51 +1,55 @@
-package models;
+package dtos;
 
 import enums.Role;
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import org.jspecify.annotations.NonNull;
 
-import static enums.Role.*;
+import java.time.LocalDate;
 
-@Entity
 @Table(name = "users")
-public class User {
+public class CreateUserDto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "user_name")
-    @NonNull
+    @NotBlank(message = "You need to fill out a name")
+    @Size(min = 3,max = 20,message = "Don't exceed limit")
     private String userName;
 
     @Column(name = "email")
-    @NonNull
+    @NotBlank
+    @Email(message = "has to be a proper email")
     private String email;
 
     @Column(name = "phone")
-    @NonNull
+    @NotBlank(message = "Write your number please")
+    @Size(min = 8,max = 8, message = "8 characters limit")
     private String phone;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
     @NonNull
+    @Valid
     private Role userRole;
 
     @Column(name = "member_since")
+    @PastOrPresent(message = "Don't live in the future, pal")
     private LocalDate memberSince;
 
     @Column(name = "updated_at")
+    @FutureOrPresent
     private LocalDate updatedAt;
 
-    public User() {
+
+    public CreateUserDto() {
     }
 
 
-    public User(Long id, @NonNull String userName, @NonNull String email, @NonNull String phone, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
+    public CreateUserDto(Long id, @NonNull String userName, @NonNull String email, @NonNull String phone, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
         this.id = id;
         this.userName = userName;
         this.email = email;
@@ -110,5 +114,4 @@ public class User {
     public void setUpdatedAt(LocalDate updatedAt) {
         this.updatedAt = updatedAt;
     }
-
 }

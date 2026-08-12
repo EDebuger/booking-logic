@@ -3,13 +3,15 @@ import enums.BookingStatus;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import models.User;
 import org.jspecify.annotations.NonNull;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Table(name = "bookings")
-public class BookingCreateDto { // every booking, current and past can be kept in one table
+public class CreateBookingDto { // every booking, current and past can be kept in one table
     // have dedicated views for each
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,40 +19,50 @@ public class BookingCreateDto { // every booking, current and past can be kept i
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @NonNull
+    @NotBlank(message = "booking needs to belong to someone")
     private User userId;
 
     @Column(name = "restaurant_name",length = 50,unique = false)
-    @NonNull
+    @NotBlank(message = "which restaurant?")
     private String restaurantName;
 
     @Column(name = "table_num")
-    @NonNull
+    @NotBlank(message = "has to reference a table")
+    @Positive(message = "is the table number right?")
+    @Max(value = 24,message = "Number is too high >_>")
     private int tableNum;
 
     @Column(name = "party_size")
+    @NotBlank(message = "Even if you're alone, you have to write it")
+    @Positive
+    @Max(value = 8,message = "You can't bring more friends, pal")
     private int partySize;
 
     @Column(name = "date_made")
-    private LocalDate dateMade;
+    @DateTimeFormat
+    @PastOrPresent
+    private LocalDate dateMade; // gets value when inserted anyway
 
     @Column(name = "booking_date")
+    @NotBlank(message = "Input a date, please")
+    @FutureOrPresent(message = "Don't live in the past,pal")
     private LocalDate bookingDate;
 
     @Column(name = "status")
     @NonNull
     @Enumerated
-    private BookingStatus status;
+    @Valid
+    private BookingStatus status; // default value 'pending' when inserted
 
     @Column(name = "updated_at")
     @NonNull
-    private LocalDate updatedAt;
+    private LocalDate updatedAt; // triggered when changed
 
 
-    public BookingCreateDto() {
+    public CreateBookingDto() {
     }
 
-    public BookingCreateDto(Long id, @NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, @NonNull BookingStatus status,  @NonNull LocalDate updatedAt) {
+    public CreateBookingDto(Long id, @NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, @NonNull BookingStatus status, @NonNull LocalDate updatedAt) {
         this.id = id;
         this.userId = userId;
         this.restaurantName = restaurantName;

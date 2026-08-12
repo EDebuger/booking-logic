@@ -1,6 +1,8 @@
 package ExceptionHandlers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -19,9 +21,15 @@ public class GlobalExceptionHandler {
         public String getMessage() {return message;}
     }
 
-    public class ResourceNotFoundException extends RuntimeException {
+    public static class ResourceNotFoundException extends RuntimeException {
         public ResourceNotFoundException(String message) {
             super(message);
         }
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(404, ex.getMessage());
+        return ResponseEntity.status(404).body(error);
     }
 }

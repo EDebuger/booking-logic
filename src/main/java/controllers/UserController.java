@@ -1,6 +1,7 @@
 package controllers;
 
 import dtos.UserProfileforAdmin;
+import dtos.UserProfileforUser;
 import jakarta.transaction.Transactional;
 import models.User;
 import enums.Role;
@@ -37,9 +38,9 @@ public class UserController {
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userRepository.findAll());
     }
-    @GetMapping("/getById{id}")
-    public ResponseEntity<User> getById(@PathVariable Long id) {
-        return ResponseEntity.of(userRepository.findById(id));
+    @GetMapping("/getById{id}") // for user
+    public ResponseEntity<UserProfileforUser> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
     @GetMapping("/getByName{name}") // to be used by admins
     public ResponseEntity<User> getByName(@PathVariable String name) {

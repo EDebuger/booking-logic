@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import repositories.UserRepository;
+import ExceptionHandlers.GlobalExceptionHandler;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,11 +19,25 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, GlobalExceptionHandler globalExceptionHandler) {
         this.userRepository = userRepository;
+        this.globalExceptionHandler = globalExceptionHandler;
     }
 
+
+    public UserProfileforUser getUserById(@PathVariable Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User "+id+" could not be found"));
+        return convertToUserDTO(user);
+    }
+
+    public UserProfileforUser getUserByName(@PathVariable String name) {
+        User user = userRepository.findByUserName(name);
+             //   .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("User "+name+" could not be found"));
+        return convertToUserDTO(user);
+    }
 
     public List<UserProfileforAdmin> getAllUsers() {
         List<User> users = userRepository.findAll();

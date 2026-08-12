@@ -1,6 +1,6 @@
 package services;
 
-import dtos.BookingCreateDto;
+import dtos.CreateBookingDto;
 import dtos.BookingUserDto;
 import models.Booking;
 import org.springframework.http.ResponseEntity;
@@ -56,8 +56,8 @@ public class BookingService {
         // Map only the fields you need for the admin profile
         return dto;
     }
-    private BookingCreateDto convertToBookingCreateDTO(Booking booking) {
-        BookingCreateDto dto = new BookingCreateDto( //dto with setters
+    private CreateBookingDto convertToBookingCreateDTO(Booking booking) {
+        CreateBookingDto dto = new CreateBookingDto( //dto with setters
                 booking.getId(),
                 booking.getUserId(),
                 booking.getRestaurantName(),
