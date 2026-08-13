@@ -1,5 +1,6 @@
 package repositories;
 
+import dtos.CreateUserDto;
 import dtos.UserProfileforAdmin;
 import dtos.UserProfileforUser;
 import enums.Role;
@@ -20,7 +21,10 @@ public interface UserRepository extends JpaRepository<User,Long>{
 
     User findByUserName(@NonNull String name);
 
+    Boolean existsByUserName(@NonNull String name);
+
     List<User> findByUserRole(@NonNull Role userRole);
 
+    User save(CreateUserDto createUserDto);
 
 }

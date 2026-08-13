@@ -1,5 +1,6 @@
 package services;
 
+import dtos.CreateUserDto;
 import dtos.UserProfileforAdmin;
 import dtos.UserProfileforUser;
 import enums.Role;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import repositories.UserRepository;
 import ExceptionHandlers.GlobalExceptionHandler;
@@ -35,7 +37,7 @@ public class UserService {
 
     public UserProfileforUser getUserByName(@PathVariable String name) {
         User user = userRepository.findByUserName(name);
-             //   .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("User "+name+" could not be found"));
+                if(user == null) throw new GlobalExceptionHandler.ResourceNotFoundException("User "+name+" could not be found");
         return convertToUserDTO(user);
     }
 
@@ -72,6 +74,15 @@ public class UserService {
             throw new RuntimeException("User not found with ID: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    public @ResponseBody UserProfileforUser createUser(@RequestBody CreateUserDto createUserDto) {
+        if (!userRepository.existsByUserName(createUserDto.getUserName())) {
+            throw  new RuntimeException("User with name -"+createUserDto.getUserName()+"- already exists");
+        }
+        else {User user = userRepository.save(createUserDto);
+        UserProfileforUser us = convertToUserDTO(user);
+        return us;} // retrieve entity | transform to dto
     }
 
     private UserProfileforAdmin convertToAdminDTO(User user) {

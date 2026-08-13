@@ -1,5 +1,6 @@
 package controllers;
 
+import dtos.CreateUserDto;
 import dtos.UserProfileforAdmin;
 import dtos.UserProfileforUser;
 import jakarta.transaction.Transactional;
@@ -38,11 +39,11 @@ public class UserController {
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userRepository.findAll());
     }
-    @GetMapping("/getById{id}") // for user
+    @GetMapping("/getById/{id}") // for user
     public ResponseEntity<UserProfileforUser> getById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
-    @GetMapping("/getByName{name}") // to be used by admins
+    @GetMapping("/getByName/{name}") // to be used by admins
     public ResponseEntity<User> getByName(@PathVariable String name) {
         return ResponseEntity.ok(userRepository.findByUserName(name));
     }
@@ -56,15 +57,6 @@ public class UserController {
 
     /*---------------------------Setters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
-    @PostMapping(value = "/insertUser")
-    public ResponseEntity<Object> insertUser(@RequestBody User user) {
-        try {
-            User savedUser = userRepository.save(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
-        }
-    }
 
 
     /*---------------------------Setters------------------------------------------*/
@@ -86,6 +78,23 @@ public class UserController {
 
 
     /*---------------------------Deleters-----------------------------------------*/
+    /*----------------------------------------------------------------------------*/
+
+
+    /*---------------------------Posters------------------------------------------*/
+    /*----------------------------------------------------------------------------*/
+
+
+    @PostMapping(value = "/insertUser/{}")
+    public ResponseEntity<Object> insertUser(@RequestBody CreateUserDto user) {
+        try { UserProfileforUser savedUser = userService.createUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+        }
+    }
+
+    /*---------------------------Posters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
 }
