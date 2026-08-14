@@ -4,6 +4,7 @@ import dtos.CreateUserDto;
 import dtos.UserProfileforAdmin;
 import dtos.UserProfileforUser;
 import enums.Role;
+import jakarta.transaction.Transactional;
 import models.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -76,6 +77,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    @Transactional
     public @ResponseBody UserProfileforUser createUser(@RequestBody CreateUserDto createUserDto) {
         if (!userRepository.existsByUserName(createUserDto.getUserName())) {
             throw  new RuntimeException("User with name -"+createUserDto.getUserName()+"- already exists");

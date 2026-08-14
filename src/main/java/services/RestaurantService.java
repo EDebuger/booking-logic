@@ -2,6 +2,7 @@ package services;
 
 import dtos.RestaurantPresentationForUser;
 import dtos.UserProfileforUser;
+import jakarta.transaction.Transactional;
 import models.Restaurant;
 import models.User;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class RestaurantService {
         return restaurant.map(this::convertToRestaurantUserDTO);
     }
 
+    @Transactional
     public void deleteRestaurantById(Long id) {
         if (!restaurantRepository.existsById(id)) {
             throw new RuntimeException("Restaurant not found with ID: " + id);

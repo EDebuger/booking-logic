@@ -2,6 +2,7 @@ package controllers;
 
 import enums.ServiceType;
 import dtos.RestaurantPresentationForUser;
+import jakarta.validation.Valid;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,6 +89,15 @@ public class RestaurantController {
     }
 
     /*---------------------------Deleters-----------------------------------------*/
+    /*----------------------------------------------------------------------------*/
+
+    /*---------------------------Posters------------------------------------------*/
+    /*----------------------------------------------------------------------------*/
+
+//    @PostMapping("/postRestaurant/{restaurant}")
+//    public ResponseEntity<?> postRestaurant(@Valid @RequestBody )
+
+    /*---------------------------Posters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
 }

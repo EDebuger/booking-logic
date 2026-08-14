@@ -4,6 +4,7 @@ import dtos.CreateUserDto;
 import dtos.UserProfileforAdmin;
 import dtos.UserProfileforUser;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import models.User;
 import enums.Role;
 import org.hibernate.annotations.SQLInsert;
@@ -85,8 +86,8 @@ public class UserController {
     /*----------------------------------------------------------------------------*/
 
 
-    @PostMapping(value = "/insertUser/{}")
-    public ResponseEntity<Object> insertUser(@RequestBody CreateUserDto user) {
+    @PostMapping(value = "/insertUser")
+    public ResponseEntity<Object> insertUser(@Valid @RequestBody() CreateUserDto user) {
         try { UserProfileforUser savedUser = userService.createUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
         } catch (Exception e) {

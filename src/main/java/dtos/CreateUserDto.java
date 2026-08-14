@@ -11,9 +11,6 @@ import java.time.LocalDate;
 @Table(name = "users")
 public class CreateUserDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(name = "user_name")
     @NotBlank(message = "You need to fill out a name")
@@ -49,8 +46,7 @@ public class CreateUserDto {
     }
 
 
-    public CreateUserDto(Long id, @NonNull String userName, @NonNull String email, @NonNull String phone, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
-        this.id = id;
+    public CreateUserDto(@NonNull String userName, @NonNull String email, @NonNull String phone, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
         this.userName = userName;
         this.email = email;
         this.phone = phone;
@@ -67,13 +63,6 @@ public class CreateUserDto {
         this.userName = userName;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public @NonNull String getPhone() {
         return phone;

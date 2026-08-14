@@ -61,6 +61,9 @@ public class Booking { // every booking, current and past can be kept in one tab
         this.status = status;
         this.updatedAt = updatedAt;
     }
+    // when recieving info from request
+    public Booking(@NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate bookingDate) {
+    }
 
 
     public Long getId() {

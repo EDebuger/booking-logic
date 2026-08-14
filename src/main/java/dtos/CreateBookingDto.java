@@ -13,9 +13,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "bookings")
 public class CreateBookingDto { // every booking, current and past can be kept in one table
     // have dedicated views for each
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -62,26 +59,14 @@ public class CreateBookingDto { // every booking, current and past can be kept i
     public CreateBookingDto() {
     }
 
-    public CreateBookingDto(Long id, @NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate dateMade, LocalDate bookingDate, @NonNull BookingStatus status, @NonNull LocalDate updatedAt) {
-        this.id = id;
+    public CreateBookingDto(@NonNull User userId, @NonNull String restaurantName, @NonNull int tableNum, int partySize, LocalDate bookingDate) {
         this.userId = userId;
         this.restaurantName = restaurantName;
         this.tableNum = tableNum;
         this.partySize = partySize;
-        this.dateMade = dateMade;
         this.bookingDate = bookingDate;
-        this.status = status;
-        this.updatedAt = updatedAt;
     }
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public @NonNull User getUserId() {
         return userId;
@@ -115,14 +100,6 @@ public class CreateBookingDto { // every booking, current and past can be kept i
         this.partySize = partySize;
     }
 
-    public LocalDate getDateMade() {
-        return dateMade;
-    }
-
-    public void setDateMade(LocalDate dateMade) {
-        this.dateMade = dateMade;
-    }
-
     public LocalDate getBookingDate() {
         return bookingDate;
     }
@@ -131,20 +108,6 @@ public class CreateBookingDto { // every booking, current and past can be kept i
         this.bookingDate = bookingDate;
     }
 
-    public BookingStatus getStatus() {
-        return status;
-    }
 
-    public void setStatus(BookingStatus status) {
-        this.status = status;
-    }
-
-    public @NonNull LocalDate getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(@NonNull LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
 }
