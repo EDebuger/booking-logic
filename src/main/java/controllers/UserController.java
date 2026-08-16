@@ -41,11 +41,11 @@ public class UserController {
         return ResponseEntity.ok(userRepository.findAll());
     }
     @GetMapping("/getById/{id}") // for user
-    public ResponseEntity<UserProfileforUser> getById(@PathVariable Long id) {
+    public ResponseEntity<UserProfileforUser> getById(@PathVariable(value = "id") Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
     @GetMapping("/getByName/{name}") // to be used by admins
-    public ResponseEntity<User> getByName(@PathVariable String name) {
+    public ResponseEntity<User> getByName(@PathVariable(value = "name") String name) {
         return ResponseEntity.ok(userRepository.findByUserName(name));
     }
     @GetMapping("/getAllUsers")

@@ -11,7 +11,10 @@ import org.jspecify.annotations.NonNull;
 import static enums.Role.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {
+        @Index(name = "idx_user_name", columnList = "user_name"),
+        @Index(name = "idx_email", columnList = "email"),
+        @Index(name = "idx_user_role", columnList = "user_role")})
 public class User {
 
     @Id
@@ -30,6 +33,9 @@ public class User {
     @NonNull
     private String phone;
 
+    @Column(name = "password", nullable = false)
+    private String password; // Stored as bcrypt hash
+
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
     @NonNull
@@ -44,16 +50,17 @@ public class User {
     public User() {
     }
 
-
-    public User(Long id, @NonNull String userName, @NonNull String email, @NonNull String phone, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
+    public User(Long id, @NonNull String userName, @NonNull String email, @NonNull String phone, String password, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
         this.id = id;
         this.userName = userName;
         this.email = email;
         this.phone = phone;
+        this.password = password;
         this.userRole = userRole;
         this.memberSince = memberSince;
         this.updatedAt = updatedAt;
     }
+
 
     public @NonNull String getUserName() {
         return userName;
@@ -71,6 +78,15 @@ public class User {
         this.id = id;
     }
 
+
+    public @NonNull String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@NonNull String email) {
+        this.email = email;
+    }
+
     public @NonNull String getPhone() {
         return phone;
     }
@@ -79,12 +95,12 @@ public class User {
         this.phone = phone;
     }
 
-    public @NonNull String getEmail() {
-        return email;
+    public String getPassword() {
+        return password;
     }
 
-    public void setEmail(@NonNull String email) {
-        this.email = email;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public @NonNull Role getUserRole() {
@@ -111,4 +127,7 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public boolean isPresent() {
+        return false;
+    }
 }

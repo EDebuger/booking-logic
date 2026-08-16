@@ -15,16 +15,27 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,Long>{
 
-    User findByUserName(@NonNull String name);
+    //@Query(value = "SELECT u FROM users u WHERE u.user_name=:name")
+    Optional<User> findByUsername(@Param(value = "name") @NonNull String name);// returns user
+    User findByUserName(@NonNull String name);// returns user
 
-    Boolean existsByUserName(@NonNull String name);
+    User findByEmail(@NonNull String email); // returns user
+
+    Boolean existsByUserName(@NonNull String name); // confirms they exist
 
     List<User> findByUserRole(@NonNull Role userRole);
 
     User save(CreateUserDto createUserDto);
 
+    @Query("""
+        SELECT u FROM User u
+        WHERE u.memberSince >= :date
+        ORDER BY u.memberSince DESC
+    """)
+    List<User> findRecentUsers(@Param("date") java.time.LocalDate date);
 }

@@ -6,9 +6,9 @@ import dtos.UserProfileforUser;
 import enums.Role;
 import jakarta.transaction.Transactional;
 import models.User;
-import org.springframework.http.ResponseEntity;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,10 +16,14 @@ import repositories.UserRepository;
 import ExceptionHandlers.GlobalExceptionHandler;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static jdk.internal.org.jline.utils.Log.*;
 
 @Service
 public class UserService {
+
 
     private final UserRepository userRepository;
     private final GlobalExceptionHandler globalExceptionHandler;
@@ -75,6 +79,26 @@ public class UserService {
             throw new RuntimeException("User not found with ID: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    @Transactional
+    public User createUser(User user, String rawPassword) {
+        info("Creating user: {}", user.getUserName());
+
+        // Check if user already exists
+        if (userRepository.findByUserName(user.getUserName()).isPresent()) {
+            throw new IllegalArgumentException("Username already exists: " + user.getUserName());
+        }
+
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already exists: " + user.getEmail());
+        }
+
+        // Encode the password
+        //String encodedPassword = SecurityConfig.passwordEncoder(rawPassword);
+        //user.setPassword(encodedPassword);
+
+        return userRepository.save(user);
     }
 
     @Transactional

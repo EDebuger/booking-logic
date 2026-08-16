@@ -27,6 +27,11 @@ public class CreateUserDto {
     @Size(min = 8,max = 8, message = "8 characters limit")
     private String phone;
 
+    @Column(name = "password", nullable = false)
+    @NotBlank(message = "Password is required, seriously")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    private String password; // Stored as bcrypt hash
+
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
     @NonNull
@@ -45,62 +50,70 @@ public class CreateUserDto {
     public CreateUserDto() {
     }
 
-
-    public CreateUserDto(@NonNull String userName, @NonNull String email, @NonNull String phone, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
+    public CreateUserDto(String userName, String email, String phone, String password, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
         this.userName = userName;
         this.email = email;
         this.phone = phone;
+        this.password = password;
         this.userRole = userRole;
         this.memberSince = memberSince;
         this.updatedAt = updatedAt;
     }
 
-    public @NonNull String getUserName() {
-        return userName;
-    }
 
-    public void setUserName(@NonNull String userName) {
-        this.userName = userName;
-    }
-
-
-    public @NonNull String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(@NonNull String phone) {
-        this.phone = phone;
-    }
-
-    public @NonNull String getEmail() {
-        return email;
-    }
-
-    public void setEmail(@NonNull String email) {
-        this.email = email;
-    }
-
-    public @NonNull Role getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(@NonNull Role userRole) {
-        this.userRole = userRole;
-    }
-
-    public LocalDate getMemberSince() {
-        return memberSince;
-    }
-
-    public void setMemberSince(LocalDate memberSince) {
-        this.memberSince = memberSince;
-    }
-
-    public LocalDate getUpdatedAt() {
+    public @FutureOrPresent LocalDate getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDate updatedAt) {
+    public void setUpdatedAt(@FutureOrPresent LocalDate updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public @PastOrPresent(message = "Don't live in the future, pal") LocalDate getMemberSince() {
+        return memberSince;
+    }
+
+    public void setMemberSince(@PastOrPresent(message = "Don't live in the future, pal") LocalDate memberSince) {
+        this.memberSince = memberSince;
+    }
+
+    public @NonNull @Valid Role getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(@NonNull @Valid Role userRole) {
+        this.userRole = userRole;
+    }
+
+    public @NotBlank(message = "Password is required, seriously") @Size(min = 8, message = "Password must be at least 8 characters") String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@NotBlank(message = "Password is required, seriously") @Size(min = 8, message = "Password must be at least 8 characters") String password) {
+        this.password = password;
+    }
+
+    public @NotBlank(message = "Write your number please") @Size(min = 8, max = 8, message = "8 characters limit") String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(@NotBlank(message = "Write your number please") @Size(min = 8, max = 8, message = "8 characters limit") String phone) {
+        this.phone = phone;
+    }
+
+    public @NotBlank @Email(message = "has to be a proper email") String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@NotBlank @Email(message = "has to be a proper email") String email) {
+        this.email = email;
+    }
+
+    public @NotBlank(message = "You need to fill out a name") @Size(min = 3, max = 20, message = "Don't exceed limit") String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(@NotBlank(message = "You need to fill out a name") @Size(min = 3, max = 20, message = "Don't exceed limit") String userName) {
+        this.userName = userName;
     }
 }
