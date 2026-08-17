@@ -81,30 +81,29 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    @Transactional
-    public User createUser(User user, String rawPassword) {
-        info("Creating user: {}", user.getUserName());
-
-        // Check if user already exists
-        if (userRepository.findByUserName(user.getUserName()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists: " + user.getUserName());
-        }
-
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists: " + user.getEmail());
-        }
-
-        // Encode the password
-        //String encodedPassword = SecurityConfig.passwordEncoder(rawPassword);
-        //user.setPassword(encodedPassword);
-
-        return userRepository.save(user);
-    }
+//    @Transactional
+//    public User createUser(@RequestBody CreateUserDto user) {
+//        info("Creating user: {}", user.getUserName());
+//
+//        // Check if user already exists
+//        if (userRepository.findByUserName(user.getUserName()).isPresent()) {
+//            throw new IllegalArgumentException("Username already exists: " + user.getUserName());
+//        }
+//
+//        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+//            throw new IllegalArgumentException("Email already exists: " + user.getEmail());
+//        }
+//
+//        return userRepository.save(user);
+//    }
 
     @Transactional
     public @ResponseBody UserProfileforUser createUser(@RequestBody CreateUserDto createUserDto) {
-        if (!userRepository.existsByUserName(createUserDto.getUserName())) {
+        if (userRepository.existsByUserName(createUserDto.getUserName())) {
             throw  new RuntimeException("User with name -"+createUserDto.getUserName()+"- already exists");
+        }
+        if (userRepository.existsByEmail(createUserDto.getEmail())) {
+            throw  new RuntimeException("User with email -"+createUserDto.getEmail()+"- already exists");
         }
         else {User user = userRepository.save(createUserDto);
         UserProfileforUser us = convertToUserDTO(user);

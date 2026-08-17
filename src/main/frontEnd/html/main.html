@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="HTML,CSS,JavaScript">
+    <meta name="description" content="Booking restaurant tables">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Booking-Site</title>
+    <link rel="stylesheet" href="../css/main.css"> <!--the points walk back steps in project structure--->
+</head>
+<body>
+<!-- src/pages/main/main.html -->
+
+<div class="main-page">
+    <!-- Header with User Info -->
+    <header class="header">
+        <div class="logo">RestaurantBooking</div>
+        <div class="user-section">
+            <div class="notification-icon" id="notificationIcon">
+                <span class="notification-badge" id="notificationBadge">0</span>
+                🔔
+            </div>
+            <div class="user-info">
+                <span class="user-name" id="userName">Guest</span>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notifications Banner -->
+    <section class="notifications-banner" id="notificationsBanner">
+        <div class="alert alert-event" id="alertEvent" style="display: none;">
+            <strong>Alert!</strong>
+            <p id="alertMessage"></p>
+        </div>
+    </section>
+
+    <!-- Carousel Section -->
+    <section class="carousel-section">
+        <h2>Featured Restaurant</h2>
+        <div class="carousel" id="carousel" style="display: none;">
+            <div class="carousel-content">
+                <img id="carouselImage" src="" alt="Featured Restaurant" class="carousel-image" />
+                <div class="carousel-info">
+                    <h3 id="carouselTitle"></h3>
+                    <p id="carouselDescription"></p>
+                    <div class="carousel-rating">
+                        <span id="carouselRating"></span> ⭐
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search & Filter Section -->
+    <section class="search-filter-section">
+        <input
+                type="text"
+                id="searchBar"
+                placeholder="Search restaurants..."
+                class="search-bar"
+        />
+
+        <div class="filters">
+            <select id="sortBySelect" class="sort-select">
+                <option value="highest_rated">Highest Rated</option>
+                <option value="lowest_rated">Lowest Rated</option>
+                <option value="least_expensive">Least Expensive</option>
+                <option value="most_expensive">Most Expensive</option>
+            </select>
+
+            <select id="serviceTypeFilter" class="filter-select">
+                <option value="">All Service Types</option>
+                <option value="FINE_DINING">Fine Dining</option>
+                <option value="CASUAL_DINING">Casual Dining</option>
+                <option value="FAST_CASUAL">Fast Casual</option>
+                <option value="CONTEMPORARY_CASUAL">Contemporary Casual</option>
+            </select>
+
+            <select id="companyFilter" class="filter-select">
+                <option value="0">All Companies</option>
+                <!-- Populated dynamically -->
+            </select>
+
+            <label class="checkbox-label">
+                <input type="checkbox" id="availableCheckbox" />
+                Show Available Only
+            </label>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section">
+        <h2>Results:</h2>
+        <div class="restaurant-cards" id="restaurantCards">
+            <!-- Restaurant cards populated here -->
+        </div>
+    </section>
+</div>
+
+<!-- Restaurant Card Template -->
+<template id="restaurantCardTemplate">
+    <div class="restaurant-card" data-id="">
+        <img class="restaurant-image" src="" alt="Restaurant" />
+        <div class="restaurant-info">
+            <h3 class="restaurant-title"></h3>
+            <p class="restaurant-description"></p>
+        </div>
+        <div class="restaurant-footer">
+            <span class="restaurant-rating"></span> ⭐
+        </div>
+    </div>
+</template>
+
+<footer>
+    <section id="info">
+        <div id="copyright"></div>
+    </section>
+</footer>
+</body>
+</html>

@@ -6,6 +6,8 @@ import dtos.UserProfileforUser;
 import enums.Role;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import models.User;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +22,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User,Long>{
 
-    //@Query(value = "SELECT u FROM users u WHERE u.user_name=:name")
+    @Query(value = "SELECT u FROM User u WHERE u.userName=:name")
     Optional<User> findByUsername(@Param(value = "name") @NonNull String name);// returns user
     User findByUserName(@NonNull String name);// returns user
 
@@ -38,4 +40,6 @@ public interface UserRepository extends JpaRepository<User,Long>{
         ORDER BY u.memberSince DESC
     """)
     List<User> findRecentUsers(@Param("date") java.time.LocalDate date);
+
+    boolean existsByEmail(@NotBlank @Email(message = "has to be a proper email") String email);
 }
