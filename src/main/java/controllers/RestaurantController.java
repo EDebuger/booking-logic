@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import repositories.RestaurantRepository;
 import services.RestaurantService;
@@ -13,7 +14,7 @@ import services.RestaurantService;
 import java.util.*;
 
 @RestController
-@RequestMapping("/Restaurants")
+@RequestMapping("/restaurants")
 public class RestaurantController {
 
     private final RestaurantRepository restaurantRepository;
@@ -26,39 +27,46 @@ public class RestaurantController {
 
     /*---------------------------Getters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
+    @PreAuthorize("hasAnyRole()")
     @GetMapping("/getAll") // called immediately on main page?
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getAll() { // if response is ok
         return ResponseEntity.ok(restaurantService.getAll()); // will return a list
     }
 
+    @PreAuthorize("hasAnyRole()") // when user clicks card, activate this
     @GetMapping("/getById/{id}") // for frontend use?
     public @ResponseBody ResponseEntity<Optional<RestaurantPresentationForUser>> getById(@PathVariable(value = "id") Long id ) {
         return ResponseEntity.of(Optional.ofNullable(restaurantService.getById(id)));
     } //gets by id
 
+    @PreAuthorize("hasAnyRole()")
     @GetMapping("/getByName/{name}")
     @Query(value = "SELECT * FROM restaurants WHERE name LIKE :name", nativeQuery = true)
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getByName(@PathVariable(value = "name") String name) {
         return ResponseEntity.of(Optional.ofNullable((restaurantRepository.findByName(name))));
     }
 
+    @PreAuthorize("hasRole('USER')") // explicitly meant for user during filtration
     @GetMapping("/getByServiceType/{serviceType}")
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getByServiceType(@PathVariable(value = "serviceType") ServiceType serviceType) {
         return ResponseEntity.ok(restaurantRepository.findByServiceType(serviceType));
     }
 
+    @PreAuthorize("hasRole('USER')") // explicitly meant for user during filtration
     @GetMapping("/getPriceRangeWithin/{num}") // get a price matching or below it
     @Query(value = "SELECT * FROM restaurants WHERE price_range = :num OR price_range < :num", nativeQuery = true)
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getPriceRangeWithin(@PathVariable(value = "num") int num) {
         return ResponseEntity.of(Optional.ofNullable(restaurantRepository.findRestaurantByPriceRangeWithin(num)));
     }
 
+    @PreAuthorize("hasRole('USER')") // explicitly meant for user during filtration
     @GetMapping("/getPriceRangeBeyond/{num}") // same as above but opposite end
     @Query(value = "SELECT * FROM restaurants WHERE price_range = :num OR price_range > :num", nativeQuery = true)
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getPriceRangeBeyond(@PathVariable(value = "num") int num) {
         return ResponseEntity.of(Optional.ofNullable(restaurantRepository.findRestaurantByPriceRangeBeyond(num)));
     }
 
+    @PreAuthorize("hasRole('USER')") // explicitly meant for user during filtration
     @GetMapping("/getByCompany/{com}")
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getByCompany(@PathVariable(value = "com") String com) {
         return ResponseEntity.ok(restaurantRepository.findRestaurantBysubOf(com));
@@ -78,6 +86,7 @@ public class RestaurantController {
     /*---------------------------Deleters-----------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
+    @PreAuthorize("hasRole('SUPERADMIN')")
     @DeleteMapping("/deleteById{id}")
     public ResponseEntity<String> deleteRestaurant(@PathVariable Long id) {
         try {
@@ -94,6 +103,7 @@ public class RestaurantController {
     /*---------------------------Posters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
+    // only considering...
 //    @PostMapping("/postRestaurant/{restaurant}")
 //    public ResponseEntity<?> postRestaurant(@Valid @RequestBody )
 

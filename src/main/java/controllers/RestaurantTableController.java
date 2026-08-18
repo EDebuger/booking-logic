@@ -2,6 +2,7 @@ package controllers;
 
 import models.RestaurantTable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import services.RestaurantTableService;
 
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/Tables")
+@RequestMapping("/tables")
 public class RestaurantTableController {
 
     private final RestaurantTableService tableService;
@@ -18,20 +19,20 @@ public class RestaurantTableController {
         this.tableService = tableService;
     }
 
-    /**
-     * Get all tables for a restaurant.
-     */
-    @GetMapping
+
+     // Get all tables for a restaurant.
+    @PreAuthorize("hasAnyRole()")
+    @GetMapping("/getAll")
     public ResponseEntity<List<RestaurantTable>> getAllTables(
             @PathVariable Long restaurantId) {
         List<RestaurantTable> tables = tableService.getTablesByRestaurant(restaurantId);
         return ResponseEntity.ok(tables);
     }
 
-    /**
-     * Get available tables only.
-     */
-    @GetMapping("/available")
+
+     // Get available tables only.
+    @PreAuthorize("hasRole('USER')") // for filtration
+    @GetMapping("/getAllAvailable")
     public ResponseEntity<List<RestaurantTable>> getAvailableTables(
             @PathVariable Long restaurantId) {
         List<RestaurantTable> tables = tableService.getAvailableTablesByRestaurant(restaurantId);
@@ -39,6 +40,7 @@ public class RestaurantTableController {
     }
 
      // Find best table for a party size.
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/best-fit")
     public ResponseEntity<?> findBestTable(
             @PathVariable Long restaurantId,
@@ -54,9 +56,9 @@ public class RestaurantTableController {
         return ResponseEntity.ok(table.get());
     }
 
-    /**
-     * Get tables by section.
-     */
+
+     // Get tables by section.
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/section/{section}")
     public ResponseEntity<List<RestaurantTable>> getTablesBySection(
             @PathVariable Long restaurantId,
@@ -66,9 +68,9 @@ public class RestaurantTableController {
         return ResponseEntity.ok(tables);
     }
 
-    /**
-     * Get all sections.
-     */
+
+     // Get all sections.
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/sections")
     public ResponseEntity<List<String>> getSections(
             @PathVariable Long restaurantId) {
@@ -76,9 +78,8 @@ public class RestaurantTableController {
         return ResponseEntity.ok(sections);
     }
 
-    /**
-     * Get available table count.
-     */
+     // Get available table count.
+    @PreAuthorize("hasAnyRole()")
     @GetMapping("/available/count")
     public ResponseEntity<Long> countAvailableTables(
             @PathVariable Long restaurantId) {

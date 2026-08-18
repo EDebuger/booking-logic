@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import repositories.RestaurantRepository;
 import repositories.UserRepository;
@@ -36,6 +37,7 @@ public class UserController {
     /*---------------------------Getters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPERADMIN')")
     @GetMapping("/getAll") // every single one, even admins
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userRepository.findAll());
@@ -67,11 +69,23 @@ public class UserController {
     /*---------------------------Deleters-----------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
-    @DeleteMapping("/deleteUser/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPERADMIN')")
+    @DeleteMapping("/deleteUser/{id,role}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id, Role role) {
         try {
-            userService.deleteUserById(id);
+            userService.deleteUserById(id,role);
             return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('SUPERADMIN')")
+    @DeleteMapping("/deleteAdmin/{id,role}")
+    public ResponseEntity<String> deleteAdmin(@PathVariable Long id, Role role) {
+        try {
+            userService.deleteAdminById(id,role);
+            return ResponseEntity.status(HttpStatus.OK).body("Admin deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
         }
@@ -86,6 +100,7 @@ public class UserController {
     /*----------------------------------------------------------------------------*/
 
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/insertUser")
     public ResponseEntity<Object> insertUser(@Valid @RequestBody() CreateUserDto user) {
         try { UserProfileforUser savedUser = userService.createUser(user);

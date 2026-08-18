@@ -74,9 +74,21 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteUserById(Long id) {
-        if (!userRepository.existsById(id)) {
+    public void deleteUserById(Long id, Role role) {
+        if (userRepository.existsById(id)) {
             throw new RuntimeException("User not found with ID: " + id);
+        }
+        if (role!=Role.USER) { // this delete function is only meant for users
+            throw new RuntimeException("User with incorrect role");
+        }
+        userRepository.deleteById(id);
+    }
+    public void deleteAdminById(Long id, Role role) {
+        if (userRepository.existsById(id)) {
+            throw new RuntimeException("User not found with ID: " + id);
+        }
+        if (role!=Role.ADMIN) { // this delete function is only meant for users
+            throw new RuntimeException("User with incorrect role");
         }
         userRepository.deleteById(id);
     }

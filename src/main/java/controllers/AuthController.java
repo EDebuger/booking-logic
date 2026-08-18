@@ -5,6 +5,7 @@ import dtos.UserProfileforUser;
 import enums.Role;
 import jakarta.validation.Valid;
 import models.User;
+import org.springframework.security.access.prepost.PreAuthorize;
 import services.UserService;
 
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class AuthController {
     }
 
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/register")
     public ResponseEntity<Object> insertUser(@Valid @RequestBody() CreateUserDto user) {
         try { passwordEncoder.encode(user.getPassword()); //encrypted
