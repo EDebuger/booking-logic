@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Table(name = "restaurants")    // model will be shown like this in search on the website
 public class RestaurantPresentationForUser {
@@ -39,6 +40,14 @@ public class RestaurantPresentationForUser {
     @NonNull
     private Long priceRange;
 
+    @Column(name = "rating")
+    @Nullable
+    private double rating; // 0.1-5.0
+
+    @Column(name = "image_url")
+    @Nullable
+    private String image; // it's an image link
+
     @Column(name = "sub_of")
     @NonNull
     private int subOf;
@@ -47,8 +56,7 @@ public class RestaurantPresentationForUser {
     public RestaurantPresentationForUser() {
     }
 
-
-    public RestaurantPresentationForUser(Long id, @NonNull String name, @NonNull String adress, @NonNull String postalCode, @NonNull ServiceType serviceType, @NonNull String description, @NonNull Long priceRange, @NonNull int subOf) {
+    public RestaurantPresentationForUser(Long id, @NonNull String name, @NonNull String adress, @NonNull String postalCode, @NonNull ServiceType serviceType, @NonNull String description, @NonNull Long priceRange, @Nullable double rating, @Nullable String image, @NonNull int subOf) {
         this.id = id;
         this.name = name;
         this.adress = adress;
@@ -56,9 +64,13 @@ public class RestaurantPresentationForUser {
         this.serviceType = serviceType;
         this.description = description;
         this.priceRange = priceRange;
-        this.subOf = subOf; //subsidary of company
+        this.rating = rating;
+        this.image = image;
+        this.subOf = subOf; //subsidary of a company
     }
-        // will only get info, not change anything
+
+
+    // will only get info, not change anything
     public @NonNull ServiceType getServiceType() {
         return serviceType;
     }
@@ -86,6 +98,10 @@ public class RestaurantPresentationForUser {
     public @NonNull Long getPriceRange() {
         return priceRange;
     }
+
+    public @Nullable double getRating() {return rating;}
+
+    public @Nullable String getImage() {return image;}
 
     public @NonNull int getSubOf() {
         return subOf;

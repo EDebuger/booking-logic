@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static jdk.internal.org.jline.utils.Log.*;
-
 @Service
 public class UserService {
 

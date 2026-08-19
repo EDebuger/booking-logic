@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static jdk.internal.org.jline.utils.Log.*;
 
 @Service
 public class BookingService {
@@ -28,21 +27,21 @@ public class BookingService {
 
 
     public @ResponseBody List<BookingUserDto> getAll() {
-        info("Fetching all bookings{}");
+        System.out.println("Fetching all bookings{}");
         List<Booking> bookings = (List<Booking>) ResponseEntity.ok(bookingRepository.findAll());
         return   bookings.stream().map(this::convertToBookingDTO)
                 .collect(Collectors.toList());
     }
 
     public @ResponseBody List<BookingUserDto> getByUserId(@PathVariable Long id) { // user calls their own
-        info("Fetching all of bookings{} from user ", id);
+        System.out.println("Fetching all of bookings{} from user "+ id);
         List<Booking> bookings = (List<Booking>) ResponseEntity.ok(bookingRepository.findByUserId(id));
         return   bookings.stream().map(this::convertToBookingDTO)
                 .collect(Collectors.toList());
     }
 
     public @ResponseBody List<BookingUserDto> getByRestaurant(@PathVariable String name) { // user calls their own
-        info("Fetching all bookings{} for restaurant ", name);
+        System.out.println("Fetching all bookings{} for restaurant "+ name);
         List<Booking> bookings = (List<Booking>) ResponseEntity.ok(bookingRepository.findByRestaurantName(name));
         return   bookings.stream().map(this::convertToBookingDTO)
                 .collect(Collectors.toList());
@@ -58,7 +57,7 @@ public class BookingService {
     @Transactional // guarantees more than one query can be run in the same session
     public @ResponseBody BookingUserDto createBooking(@PathVariable CreateBookingDto cb) {
         Booking booking = toEntity(cb);
-        info("Inserting new booking for restaurant ",cb.getRestaurantName(),"for date ", cb.getBookingDate());
+        System.out.println("Inserting new booking for restaurant "+cb.getRestaurantName()+"for date "+ cb.getBookingDate());
         Booking saved;
         try {
         saved = bookingRepository.save(booking);

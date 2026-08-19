@@ -42,4 +42,7 @@ public interface UserRepository extends JpaRepository<User,Long>{
     List<User> findRecentUsers(@Param("date") java.time.LocalDate date);
 
     boolean existsByEmail(@NotBlank @Email(message = "has to be a proper email") String email);
+
+
+    User findByUsernameOrEmail(String param);
 }

@@ -42,32 +42,20 @@ public class CreateUserDto {
     @PastOrPresent(message = "Don't live in the future, pal")
     private LocalDate memberSince;
 
-    @Column(name = "updated_at")
-    @FutureOrPresent
-    private LocalDate updatedAt;
-
 
     public CreateUserDto() {
     }
 
-    public CreateUserDto(String userName, String email, String phone, String password, @NonNull Role userRole, LocalDate memberSince, LocalDate updatedAt) {
+    public CreateUserDto(String userName, String email, String phone, String password, @NonNull Role userRole, LocalDate memberSince) {
         this.userName = userName;
         this.email = email;
         this.phone = phone;
         this.password = password;
         this.userRole = userRole;
         this.memberSince = memberSince;
-        this.updatedAt = updatedAt;
     }
 
 
-    public @FutureOrPresent LocalDate getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(@FutureOrPresent LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public @PastOrPresent(message = "Don't live in the future, pal") LocalDate getMemberSince() {
         return memberSince;
