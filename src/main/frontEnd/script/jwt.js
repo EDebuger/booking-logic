@@ -1,32 +1,55 @@
 // connect to api
 
 // login that recieves token, afterwards the rest are available
-async function login(username, password) {
-    const response = await fetch("http://localhost:8080/auth/login", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"}, // info
-        body: JSON.stringify({userName: "", password: ""}), // params
+async function apiFetch(url, options = {}) {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...(token && { "Authorization": `Bearer ${token}` }),
+            ...options.headers
+        }
     });
-    if (!response.ok) {
-        throw new Error("Wrong username or password");
+    if (response.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return;
     }
-    const token = await response.text();
-    localStorage.setItem("token", token);
+    return response;
 }
 
-const response = await fetch("http://localhost:8080/auth/testGetUsers", {
-    method: "GET",
-    headers: {"Content-Type": "application/json"},
-    "Authorization": `Bearer ${localStorage.getItem("token")}` // get item called 'token'
-}   );
+//login
+async function login(username, password) {
+    const response = await fetch("/auth/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({userName: "", password: ""})
+    });
+    if (!response.ok) {throw new Error("Wrong username or password");}
 
-const response = await fetch("http://localhost:8080/users/getAllUsers", {
-    method: "GET",
-    headers: {"Content-Type": "application/json"},
-    "Authorization": `Bearer ${localStorage.getItem("token")}` // get item called 'token'
-}   );
+    const token = response.text();
+    localStorage.setItem("token",token);
+}
 
+// simplified, GETTERS
+const response = await fetch("http://localhost:8080/auth/testGetUsers");
 
+const response = await fetch("http://localhost:8080/users/getAllUsers");
+
+// simplified, SETTERS
+const response = await fetch("http://localhost:8080/auth/register", {
+    method: "POST",
+    body: JSON.stringify(newUser),
+});
+
+const response = await fetch("http://localhost:8080/bookings/postBooking", {
+    method: "POST",
+    body: JSON.stringify(newBooking)
+});
+
+//login/logout functions
 async function isLoggedin() {
     return localStorage.getItem("token") !== null;
 }
