@@ -22,7 +22,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User,Long>{
 
-    @Query(value = "SELECT u FROM User u WHERE u.userName=:name")
+    @Query(value = "SELECT DISTINCT FROM User WHERE userName=:name", nativeQuery = true)
     Optional<User> findByUsername(@Param(value = "name") @NonNull String name);// returns user
     User findByUserName(@NonNull String name);// returns user
 

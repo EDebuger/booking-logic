@@ -2,6 +2,7 @@ package services;
 
 import dtos.RestaurantPresentationForUser;
 import dtos.UserProfileforUser;
+import enums.ServiceType;
 import jakarta.transaction.Transactional;
 import models.Restaurant;
 import models.User;
@@ -31,6 +32,47 @@ public class RestaurantService {
                 .collect(Collectors.toList());
     }
 
+    public @ResponseBody List<RestaurantPresentationForUser> getByPriceBeyond(int p) {
+        List<Restaurant> restaurants = restaurantRepository.findRestaurantByPriceRangeBeyond(p);
+        return restaurants.stream()
+                .map(this::convertToRestaurantUserDTO)
+                .collect(Collectors.toList());
+    }
+    public @ResponseBody List<RestaurantPresentationForUser> getByPriceWithin(int p) {
+        List<Restaurant> restaurants = restaurantRepository.findRestaurantByPriceRangeWithin(p);
+        return restaurants.stream()
+                .map(this::convertToRestaurantUserDTO)
+                .collect(Collectors.toList());
+    }
+
+    public @ResponseBody List<RestaurantPresentationForUser> getByName(String name) {
+        List<Restaurant> restaurants = restaurantRepository.findByName(name);
+        return restaurants.stream()
+                .map(this::convertToRestaurantUserDTO)
+                .collect(Collectors.toList());
+    }
+
+    public @ResponseBody List<RestaurantPresentationForUser> getByRating(int p) {
+        List<Restaurant> restaurants = restaurantRepository.findRestaurantByRating(p);
+        return restaurants.stream()
+                .map(this::convertToRestaurantUserDTO)
+                .collect(Collectors.toList());
+    }
+
+    public @ResponseBody List<RestaurantPresentationForUser> getByServiceType(ServiceType s) {
+        List<Restaurant> restaurants = restaurantRepository.findByServiceType(s);
+        return restaurants.stream()
+                .map(this::convertToRestaurantUserDTO)
+                .collect(Collectors.toList());
+    }
+
+    public @ResponseBody List<RestaurantPresentationForUser> getByCompany(String n) {
+        List<Restaurant> restaurants = restaurantRepository.findRestaurantBysubOf(n);
+        return restaurants.stream()
+                .map(this::convertToRestaurantUserDTO)
+                .collect(Collectors.toList());
+    }
+
     public @ResponseBody Optional<RestaurantPresentationForUser> getById(@PathVariable Long id) {
         Optional<Restaurant> restaurant = restaurantRepository.findById(id); // if none
         return restaurant.map(this::convertToRestaurantUserDTO);
@@ -53,6 +95,8 @@ public class RestaurantService {
                 restaurant.getServiceType(),
                 restaurant.getDescription(),
                 restaurant.getPriceRange(),
+                restaurant.getRating(),
+                restaurant.getImage(),
                 restaurant.getSubOf()
         );
         // Map only the fields you need for the admin profile

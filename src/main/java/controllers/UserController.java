@@ -42,14 +42,17 @@ public class UserController {
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userRepository.findAll());
     }
+
     @GetMapping("/getById/{id}") // for user
     public ResponseEntity<UserProfileforUser> getById(@PathVariable(value = "id") Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
+
     @GetMapping("/getByName/{name}") // to be used by admins
     public ResponseEntity<User> getByName(@PathVariable(value = "name") String name) {
         return ResponseEntity.ok(userRepository.findByUserName(name));
     }
+
     @GetMapping("/getAllUsers")
     public  List<UserProfileforAdmin> getAllUsers() {
         return userService.getAllUsers(); // retrieve from service
@@ -70,8 +73,8 @@ public class UserController {
     /*----------------------------------------------------------------------------*/
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPERADMIN')")
-    @DeleteMapping("/deleteUser/{id,role}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id, Role role) {
+    @DeleteMapping("/deleteUser/{id}/{role}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id, @PathVariable Role role) {
         try {
             userService.deleteUserById(id,role);
             return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
@@ -81,8 +84,8 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('SUPERADMIN')")
-    @DeleteMapping("/deleteAdmin/{id,role}")
-    public ResponseEntity<String> deleteAdmin(@PathVariable Long id, Role role) {
+    @DeleteMapping("/deleteAdmin/{id}/{role}")
+    public ResponseEntity<String> deleteAdmin(@PathVariable Long id, @PathVariable Role role) {
         try {
             userService.deleteAdminById(id,role);
             return ResponseEntity.status(HttpStatus.OK).body("Admin deleted successfully");
@@ -100,7 +103,6 @@ public class UserController {
     /*----------------------------------------------------------------------------*/
 
 
-    @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/insertUser")
     public ResponseEntity<Object> insertUser(@Valid @RequestBody() CreateUserDto user) {
         try { UserProfileforUser savedUser = userService.createUser(user);

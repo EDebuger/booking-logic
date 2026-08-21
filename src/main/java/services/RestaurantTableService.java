@@ -1,5 +1,7 @@
 package services;
 
+import dtos.RestaurantTableDTO;
+import models.Restaurant;
 import models.RestaurantTable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,4 +90,35 @@ public class RestaurantTableService {
     public long countAvailableTables(Long restaurantId) {
         return tableRepository.countAvailableTablesByRestaurant(restaurantId);
     }
+
+    // In RestaurantTableService
+    public RestaurantTableDTO toDTO(RestaurantTable entity) {
+        if (entity == null) return null;
+
+        return new RestaurantTableDTO(
+                entity.getId(),
+                entity.getRestaurant().getId(),
+                entity.getTableNumber(),
+                entity.getSection(),
+                entity.getCapacity(),
+                entity.getAvailable(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
+        );
+    }
+
+    public RestaurantTable toEntity(RestaurantTableDTO dto, Restaurant restaurant) {
+        if (dto == null) return null;
+
+        RestaurantTable entity = new RestaurantTable();
+        entity.setId(dto.getId());
+        entity.setRestaurant(restaurant);
+        entity.setTableNumber(dto.getTableNumber());
+        entity.setSection(dto.getSection());
+        entity.setCapacity(dto.getCapacity());
+        entity.setAvailable(dto.getIsAvailable());
+
+        return entity;
+    }
+
 }

@@ -90,5 +90,77 @@ public class RestaurantTable {
         return String.format("Table %d - %s (Capacity: %d)",
                 this.tableNumber, this.section, this.capacity);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public @NotNull Restaurant getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(@NotNull Restaurant restaurant) {
+        this.restaurant = restaurant;
+    }
+
+    public @NotNull Integer getTableNumber() {
+        return tableNumber;
+    }
+
+    public void setTableNumber(@NotNull Integer tableNumber) {
+        this.tableNumber = tableNumber;
+    }
+
+    public @NotBlank String getSection() {
+        return section;
+    }
+
+    public void setSection(@NotBlank String section) {
+        this.section = section;
+    }
+
+    public @NotNull Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(@NotNull Integer capacity) {
+        this.capacity = capacity;
+    }
+
+    public Boolean getAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(Boolean available) {
+        isAvailable = available;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
 }
 

@@ -41,35 +41,38 @@ public class RestaurantController {
 
     @PreAuthorize("hasAnyRole()")
     @GetMapping("/getByName/{name}")
-    @Query(value = "SELECT * FROM restaurants WHERE name LIKE :name", nativeQuery = true)
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getByName(@PathVariable(value = "name") String name) {
-        return ResponseEntity.of(Optional.ofNullable((restaurantRepository.findByName(name))));
+        return ResponseEntity.of(Optional.ofNullable((restaurantService.getByName(name))));
     }
 
     @PreAuthorize("hasRole('USER')") // explicitly meant for user during filtration
     @GetMapping("/getByServiceType/{serviceType}")
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getByServiceType(@PathVariable(value = "serviceType") ServiceType serviceType) {
-        return ResponseEntity.ok(restaurantRepository.findByServiceType(serviceType));
+        return ResponseEntity.ok(restaurantService.getByServiceType(serviceType));
     }
 
     @PreAuthorize("hasRole('USER')") // explicitly meant for user during filtration
     @GetMapping("/getPriceRangeWithin/{num}") // get a price matching or below it
-    @Query(value = "SELECT * FROM restaurants WHERE price_range = :num OR price_range < :num", nativeQuery = true)
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getPriceRangeWithin(@PathVariable(value = "num") int num) {
-        return ResponseEntity.of(Optional.ofNullable(restaurantRepository.findRestaurantByPriceRangeWithin(num)));
+        return ResponseEntity.of(Optional.ofNullable(restaurantService.getByPriceWithin(num)));
     }
 
     @PreAuthorize("hasRole('USER')") // explicitly meant for user during filtration
     @GetMapping("/getPriceRangeBeyond/{num}") // same as above but opposite end
-    @Query(value = "SELECT * FROM restaurants WHERE price_range = :num OR price_range > :num", nativeQuery = true)
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getPriceRangeBeyond(@PathVariable(value = "num") int num) {
-        return ResponseEntity.of(Optional.ofNullable(restaurantRepository.findRestaurantByPriceRangeBeyond(num)));
+        return ResponseEntity.of(Optional.ofNullable(restaurantService.getByPriceBeyond(num)));
+    }
+
+    @PreAuthorize("hasRole('USER')") // explicitly meant for user during filtration
+    @GetMapping("/getByRating/{num}") // same as above but opposite end
+    public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getByRating(@PathVariable(value = "num") int num) {
+        return ResponseEntity.of(Optional.ofNullable(restaurantService.getByRating(num)));
     }
 
     @PreAuthorize("hasRole('USER')") // explicitly meant for user during filtration
     @GetMapping("/getByCompany/{com}")
     public @ResponseBody ResponseEntity<List<RestaurantPresentationForUser>> getByCompany(@PathVariable(value = "com") String com) {
-        return ResponseEntity.ok(restaurantRepository.findRestaurantBysubOf(com));
+        return ResponseEntity.ok(restaurantService.getByCompany(com));
     }
 
     /*---------------------------Getters------------------------------------------*/
@@ -87,7 +90,7 @@ public class RestaurantController {
     /*----------------------------------------------------------------------------*/
 
     @PreAuthorize("hasRole('SUPERADMIN')")
-    @DeleteMapping("/deleteById{id}")
+    @DeleteMapping("/deleteById/{id}")
     public ResponseEntity<String> deleteRestaurant(@PathVariable Long id) {
         try {
             restaurantService.deleteRestaurantById(id);
