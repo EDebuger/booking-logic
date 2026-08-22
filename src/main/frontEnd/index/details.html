@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Details</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="restaurant-detail.css">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-container">
+        <div class="header-left">
+            <h1 class="logo">Resto</h1>
+        </div>
+        <div class="header-right">
+            <span id="userInfo" class="user-info"></span>
+            <div class="notification-icon-wrapper">
+                <span class="notification-icon">🔔</span>
+                <div id="notificationBanner" class="notification-banner hidden"></div>
+            </div>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+    </div>
+</header>
+
+<!-- Back Button -->
+<div class="detail-container">
+    <button id="backBtn" class="back-button">← Back to Restaurants</button>
+
+    <!-- Restaurant Info Section -->
+    <section id="restaurantInfo" class="restaurant-info">
+        <div class="restaurant-image-container">
+            <img id="restaurantImage" src="" alt="Restaurant" class="restaurant-image">
+        </div>
+        <div class="restaurant-details">
+            <h1 id="restaurantName" class="restaurant-name"></h1>
+            <div class="restaurant-meta">
+                <span id="restaurantRating" class="rating"></span>
+                <span id="restaurantServiceType" class="service-type"></span>
+            </div>
+            <p id="restaurantDescription" class="restaurant-description"></p>
+            <div class="restaurant-contact">
+                <p id="restaurantAddress" class="address"></p>
+                <p id="restaurantPostalCode" class="postal-code"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section class="booking-section">
+        <h2>Reserve a Table</h2>
+
+        <div class="booking-controls">
+            <!-- Date Selection -->
+            <div class="control-group">
+                <label for="dateInput">Select Date:</label>
+                <input
+                        type="date"
+                        id="dateInput"
+                        class="date-input"
+                        required
+                >
+            </div>
+
+            <!-- Party Size Selection -->
+            <div class="control-group">
+                <label for="partySizeInput">Number of Guests (Max 8):</label>
+                <select id="partySizeInput" class="party-size-input">
+                    <option value="" disabled selected>Select party size</option>
+                    <option value="1">1 Guest</option>
+                    <option value="2">2 Guests</option>
+                    <option value="3">3 Guests</option>
+                    <option value="4">4 Guests</option>
+                    <option value="5">5 Guests</option>
+                    <option value="6">6 Guests</option>
+                    <option value="7">7 Guests</option>
+                    <option value="8">8 Guests</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Available Tables List -->
+        <div class="tables-section">
+            <h3>Available Tables</h3>
+            <div id="tablesList" class="tables-list">
+                <p class="placeholder">Select a date and party size to see available tables</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Booking Confirmation Modal -->
+<div id="bookingModal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Confirm Booking</h2>
+        <div id="bookingDetails" class="booking-details">
+            <!-- Details populated by JavaScript -->
+        </div>
+        <div class="modal-actions">
+            <button id="confirmBtn" class="confirm-btn">Confirm</button>
+            <button id="cancelBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Overlay -->
+<div id="modalOverlay" class="modal-overlay hidden"></div>
+
+<script src="jwt.js"></script>
+<script src="restaurant-detail.js"></script>
+</body>
+</html>
