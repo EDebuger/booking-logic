@@ -16,6 +16,7 @@ import repositories.UserRepository;
 import ExceptionHandlers.GlobalExceptionHandler;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -119,6 +120,63 @@ public class UserService {
         UserProfileforUser us = convertToUserDTO(user);
         return us;} // retrieve entity | transform to dto
     }
+
+
+    public Map<String, Object> validatePhoneChange(Long userId, String phone, String currentPassword) {
+        if(userRepository.existsById(userId)) {
+            if(userRepository.existsUserByIdAndPassword(userId,currentPassword)) {
+                return Map.of(
+                        "success", true,
+                        "message", "Phone number is valid and ready to update to"+phone
+                );
+
+            } else {throw new RuntimeException("Wrong password for user:"+userId);}
+        } else {throw new RuntimeException("User with id:"+userId+" does not exist");}
+    }
+
+    public Map<String, Object> validateUsernameChange(Long userId, String newUsername, String currentPassword) {
+        if(userRepository.existsById(userId)) {
+            if(userRepository.existsUserByIdAndPassword(userId,currentPassword)) {
+                return Map.of(
+                        "success", true,
+                        "message", "Username is valid and ready to update to"+newUsername
+                );
+
+            } else {throw new RuntimeException("Wrong password for user:"+userId);}
+        } else {throw new RuntimeException("User with id:"+userId+" does not exist");}
+    }
+
+    public Map<String, Object> validatePasswordChange(Long userId, String currentPassword, String newPassword) {
+        if(userRepository.existsById(userId)) {
+            if(userRepository.existsUserByIdAndPassword(userId,currentPassword)) {
+                return Map.of(
+                        "success", true,
+                        "message", "Password is valid and ready to update"
+                );
+
+            } else {throw new RuntimeException("Wrong password for user:"+userId);}
+        } else {throw new RuntimeException("User with id:"+userId+" does not exist");}
+    }
+
+    @Transactional
+    public Map<String, Object> applyProfileChanges(Long userId, String phone, String username, String newPassword) {
+        if(userRepository.existsById(userId)) { // set them all
+            userRepository.setNewPhone(userId,phone);
+            userRepository.setNewUserName(userId,username);
+            userRepository.setNewPassword(userId,newPassword);
+
+            return Map.of(
+                    "success", true,
+                    "message", "Profile updated successfully",
+                    "updatedFields", Map.of(
+                            "new phone", phone,
+                            "username", username
+                    )   );
+        } else {throw new RuntimeException(
+                "User with id:"+userId+" does not exist");
+        }
+    }
+
 
     private UserProfileforAdmin convertToAdminDTO(User user) {
         UserProfileforAdmin dto = new UserProfileforAdmin( //dto without setters

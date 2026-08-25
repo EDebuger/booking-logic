@@ -15,6 +15,8 @@ import services.JwtService;
 
 import java.io.IOException;
 
+import static io.netty.handler.codec.http.HttpHeaderValidationUtil.validateToken;
+
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -55,19 +57,47 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 //        filterChain.doFilter(request, response);
 //    }
 
+    private static final String[] PUBLIC_PATHS = {
+            "/auth/**",
+    };
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String requestPath = request.getRequestURI();
+        //String requestPath = request.getRequestURI();
+        String path = request.getRequestURI();
 
-        // Skip JWT validation for public endpoints
-        if (requestPath.startsWith("/auth/") || requestPath.startsWith("/public/")) {
+        // Skip filter for public paths
+        if (isPublicPath(path)) {
             filterChain.doFilter(request, response);
-            return;  // ← IMPORTANT: Stop here, don't validate JWT
+            return;
         }
 
+        // Continue with JWT validation
+        String token = extractToken(request);
+        if (token != null && validateToken(token)) {
+            // Set authentication
+        }
 
+        filterChain.doFilter(request, response);
+    }
+
+    private boolean isPublicPath(String path) {
+        for (String publicPath : PUBLIC_PATHS) {
+            if (path.startsWith(publicPath)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+        // Skip JWT validation for public endpoints
+//        if (requestPath.startsWith("/auth/") || requestPath.startsWith("/public/")) {
+//            filterChain.doFilter(request, response);
+//            return;  // ← IMPORTANT: Stop here, don't validate JWT
+//        }
 
         filterChain.doFilter(request, response);
     }

@@ -1,5 +1,6 @@
 package controllers;
 
+import dtos.ChangeUserDto;
 import dtos.CreateUserDto;
 import dtos.UserProfileforAdmin;
 import dtos.UserProfileforUser;
@@ -12,11 +13,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import repositories.RestaurantRepository;
 import repositories.UserRepository;
+import services.PasswordEncoderService;
 import services.UserService;
 
 import java.util.*;
@@ -27,10 +30,12 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final PasswordEncoderService passwordEncoder;
 
-    public UserController(UserRepository userRepository, UserService userService) {
+    public UserController(UserRepository userRepository, UserService userService, PasswordEncoderService passwordEncoder) {
         this.userRepository = userRepository;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -63,6 +68,38 @@ public class UserController {
 
     /*---------------------------Setters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
+
+    @PostMapping("/users/{id}/validate-phone")
+    public HttpStatusCode validatePhoneChange(@PathVariable Long id, @Valid @RequestBody ChangeUserDto.ChangePhoneValidationDto dto) {
+        return ResponseEntity.ok(userService.validatePhoneChange(
+                id, dto.getPhone(), dto.getCurrentPassword())).getStatusCode();
+    }
+
+    @PostMapping("/users/{id}/validate-username")
+    public HttpStatusCode validateUsernameChange(@PathVariable Long id, @Valid @RequestBody ChangeUserDto.ChangeUsernameValidationDto dto) {
+        return ResponseEntity.ok(userService.validateUsernameChange(
+                id, dto.getNewUsername(), dto.getCurrentPassword())).getStatusCode();
+    }
+
+    @PostMapping("/users/{id}/validate-password")
+    public HttpStatusCode validatePasswordChange(@PathVariable Long id, @Valid @RequestBody ChangeUserDto.ChangePasswordValidationDto dto) {
+        // Calls service validation
+        try {
+            passwordEncoder.encodePassword(dto.getCurrentPassword());
+            return ResponseEntity.ok(userService.validatePasswordChange(
+                id, dto.getNewPassword(), dto.getCurrentPassword())).getStatusCode();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage()+"Could not get password changed");
+        }
+    }
+
+    @PutMapping("/users/{id}/profile-changes")
+    @Transactional
+    public HttpStatusCode applyProfileChanges(@PathVariable Long id, @Valid @RequestBody ChangeUserDto.ApplyProfileChangesDto dto) {
+        // Calls service to apply all changes
+        return ResponseEntity.ok(userService.applyProfileChanges(
+                id, dto.getPhone(), dto.getUsername(), dto.getNewPassword())).getStatusCode();
+    }
 
 
     /*---------------------------Setters------------------------------------------*/
@@ -102,7 +139,7 @@ public class UserController {
     /*---------------------------Posters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
-
+    // useful for newcomers
     @PostMapping(value = "/insertUser")
     public ResponseEntity<Object> insertUser(@Valid @RequestBody() CreateUserDto user) {
         try { UserProfileforUser savedUser = userService.createUser(user);

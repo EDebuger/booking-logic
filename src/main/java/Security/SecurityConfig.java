@@ -83,13 +83,13 @@ public class SecurityConfig {
 //                .formLogin(Customizer.withDefaults())
 //                .logout(Customizer.withDefaults());
 
-        http // allow different origins/ports
+        http // could allow different origins/ports
                     .cors(Customizer.withDefaults())
                         .csrf(csrf -> csrf.disable())
                         .sessionManagement(session -> session
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/auth/**").permitAll() // meant to let anyone use it
                                 .anyRequest().authenticated())
                         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                         .exceptionHandling(ex -> ex

@@ -5,39 +5,45 @@ import models.Restaurant;
 import models.RestaurantTable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import repositories.RestaurantRepository;
 import repositories.RestaurantTableRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
 public class RestaurantTableService {
 
     private final RestaurantTableRepository tableRepository;
+    private final RestaurantRepository restaurantRepository;
 
-    public RestaurantTableService(RestaurantTableRepository tableRepository) {
+    public RestaurantTableService(RestaurantTableRepository tableRepository, RestaurantRepository restaurantRepository) {
         this.tableRepository = tableRepository;
+        this.restaurantRepository = restaurantRepository;
     }
 
     /**
      * Get all tables for a restaurant.
      */
-    public List<RestaurantTable> getTablesByRestaurant(Long restaurantId) {
+    public List<RestaurantTableDTO> getTablesByRestaurant(Long restaurantId) {
         System.out.println("Fetching all tables for restaurant: {}"+ restaurantId);
-        return tableRepository.findByRestaurantIdOrderByTableNumber(restaurantId);
+        List<RestaurantTable> tables = tableRepository.findByRestaurantIdOrderByTableNumber(restaurantId);
+        return tables.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     /**
      * Get available tables for a restaurant.
      */
-    public List<RestaurantTable> getAvailableTablesByRestaurant(Long restaurantId) {
+    public List<RestaurantTableDTO> getAvailableTablesByRestaurant(Long restaurantId) {
         System.out.println("Fetching available tables for restaurant: {}"+ restaurantId);
-        return tableRepository.findAvailableTablesByRestaurant(restaurantId);
+        List<RestaurantTable> tables = tableRepository.findAvailableTablesByRestaurant(restaurantId);
+        return tables.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
      // Find the best table based on party size.
-    public Optional<RestaurantTable> findBestTableForParty(Long restaurantId, Integer partySize) {
+    public Optional<RestaurantTableDTO> findBestTableForParty(Long restaurantId, Integer partySize) {
         System.out.println("Finding best table for party of {} at restaurant: {}"+ partySize+ restaurantId);
 
         List<RestaurantTable> availableTables =
@@ -47,15 +53,16 @@ public class RestaurantTableService {
             System.out.println("No available tables for party size {} at restaurant {}"+ partySize+ restaurantId);
             return Optional.empty();
         }
-
+         List<RestaurantTableDTO> tables = availableTables.stream().map(this::toDTO).collect(Collectors.toList());
         // Return the smallest table that fits the party (best fit algorithm)
-        return availableTables.stream().findFirst();
+        return tables.stream().findFirst();
     }
 
      // Get tables by section.
-    public List<RestaurantTable> getTablesBySection(Long restaurantId, String section) {
+    public List<RestaurantTableDTO> getTablesBySection(Long restaurantId, String section) {
         System.out.println("Fetching tables in section '{}' for restaurant: {}"+ section+ restaurantId);
-        return tableRepository.findTablesByRestaurantAndSection(restaurantId, section);
+        List<RestaurantTable> tables = tableRepository.findTablesByRestaurantAndSection(restaurantId, section);
+        return tables.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
      // Get all sections in a restaurant.
@@ -64,12 +71,38 @@ public class RestaurantTableService {
         return tableRepository.findDistinctSectionsByRestaurant(restaurantId);
     }
 
-     // Mark a table as available.
+    @Transactional
+    public RestaurantTableDTO createTable(Long restaurantId, RestaurantTableDTO tableDTO) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with id: " + restaurantId));
+
+        RestaurantTable table = new RestaurantTable();
+        table.setRestaurant(restaurant);
+        table.setTableNumber(tableDTO.getTableNumber());
+        table.setSection(tableDTO.getSection());
+        table.setCapacity(tableDTO.getCapacity());
+        table.setAvailable(tableDTO.getIsAvailable());
+
+        RestaurantTable created = tableRepository.save(table);
+
+        return toDTO(created);
+    }
+
+    @Transactional
+    public void deleteTable(Long restaurantId, Long tableId) {
+        if(tableRepository.existsById(tableId) && tableRepository.existsById(restaurantId)) {
+            tableRepository.deleteById(tableId);
+        }
+            else{throw new IllegalArgumentException("Restaurant or table was not found with id: ");}
+    }
+
+
+
+    // Mark a table as available.
     @Transactional
     public RestaurantTable markTableAvailable(Long tableId) {
         RestaurantTable table = tableRepository.findById(tableId)
                 .orElseThrow(() -> new IllegalArgumentException("Table not found: " + tableId));
-
         table.markAvailable();
         System.out.println("Marked table {} as available"+ tableId);
         return tableRepository.save(table);
@@ -86,7 +119,19 @@ public class RestaurantTableService {
         return tableRepository.save(table);
     }
 
-     // Count available tables.
+    @Transactional
+    public RestaurantTableDTO updateTableAvailability(Long tableId, Boolean available) {
+        RestaurantTable table = tableRepository.findById(tableId)
+                .orElseThrow(() -> new RuntimeException("Table not found with id: " + tableId));
+
+        table.setAvailable(available);
+        RestaurantTable updated = tableRepository.save(table);
+
+        return toDTO(updated);
+    }
+
+
+    // Count available tables.
     public long countAvailableTables(Long restaurantId) {
         return tableRepository.countAvailableTablesByRestaurant(restaurantId);
     }

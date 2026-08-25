@@ -125,19 +125,19 @@ public class RestaurantTableController {
     }
 
     // Update table (Admin only)
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPERADMIN')")
-    @PutMapping("/{tableId}")
-    public ResponseEntity<RestaurantTableDTO> updateTable(
-            @PathVariable Long restaurantId,
-            @PathVariable Long tableId,
-            @Valid @RequestBody RestaurantTableDTO tableDTO) {
-        try {
-            RestaurantTableDTO updated = tableService.updateTable(tableId, tableDTO);
-            return ResponseEntity.ok(updated);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPERADMIN')")
+//    @PutMapping("/{tableId}")
+//    public ResponseEntity<RestaurantTableDTO> updateTable(
+//            @PathVariable Long restaurantId,
+//            @PathVariable Long tableId,
+//            @Valid @RequestBody RestaurantTableDTO tableDTO) {
+//        try {
+//            RestaurantTableDTO updated = tableService.updateTable(tableId, tableDTO);
+//            return ResponseEntity.ok(updated);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//    }
 
     // Delete a table (SuperAdmin only)
     @PreAuthorize("hasRole('SUPERADMIN')")
@@ -146,7 +146,7 @@ public class RestaurantTableController {
             @PathVariable Long restaurantId,
             @PathVariable Long tableId) {
         try {
-            tableService.deleteTable(tableId);
+            tableService.deleteTable(tableId,restaurantId);
             return ResponseEntity.ok("Table deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

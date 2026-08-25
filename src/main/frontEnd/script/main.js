@@ -203,7 +203,7 @@ function applySorting(restaurants, sortBy) {
 }
 
 // ==================== DISPLAY RESTAURANTS ====================
-function displayRestaurants(restaurants) {
+function displayRestaurants(restaurants) { // retrieves and sorts the restaurants into the cards
     const container = document.getElementById('restaurantCards');
     container.innerHTML = ''; // Clear existing cards
 
