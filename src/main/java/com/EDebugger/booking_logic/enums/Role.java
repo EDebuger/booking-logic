@@ -1,0 +1,5 @@
+package com.EDebugger.booking_logic.enums;
+
+public enum Role {
+    USER,ADMIN,SUPERADMIN,DEFUNCT
+}

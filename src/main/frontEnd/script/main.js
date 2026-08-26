@@ -8,10 +8,10 @@ const CAROUSEL_INTERVAL = 5000; // 5 seconds
 // ==================== PAGE LOAD ====================
 document.addEventListener('DOMContentLoaded', async () => {
     // Check if user is logged in
-    if (!isLoggedin()) {
-        window.location.href = '/auth/login';
-        return;
-    }
+   // if (!isLoggedin()) {
+     //   window.location.href = '/auth/login';
+       // return;
+    //}
 
     // Load all restaurants
     await loadAllRestaurants();
@@ -32,12 +32,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ==================== LOAD RESTAURANTS ====================
 async function loadAllRestaurants() {
     try {
-        const response = await apiFetch('/restaurants/getAll');
+        const response = await apiFetch('localhost:8080/restaurants/getAll');
         if (!response.ok) {
             throw new Error('Failed to load restaurants');
         }
         allRestaurants = await response.json();
-        filteredRestaurants = [...allRestaurants];
+        filteredRestaurants = [...allRestaurants]; // fills up, populates
         displayRestaurants(filteredRestaurants);
     } catch (error) {
         console.error('Error loading restaurants:', error);
@@ -161,7 +161,7 @@ async function filterByAvailability(restaurants) {
 
     for (const restaurant of restaurants) {
         try {
-            const response = await apiFetch(`/restaurants/${restaurant.id}/tables/available/count`);
+            const response = await apiFetch(`http://localhost:8080/restaurants/${restaurant.id}/tables/available/count`);
             if (response.ok) {
                 const data = await response.json();
                 if (data > 0) {
@@ -240,7 +240,7 @@ function displayRestaurants(restaurants) { // retrieves and sorts the restaurant
  * Navigate to restaurant detail page
  */
 function navigateToRestaurantDetail(restaurantId) {
-    window.location.href = `/restaurant-detail.html?id=${restaurantId}`;
+    window.location.href = `http://localhost:8080/details.html?id=${restaurantId}`;
     // TODO: Create restaurant-detail.html page
 }
 
