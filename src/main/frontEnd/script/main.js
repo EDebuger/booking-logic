@@ -1,342 +1,216 @@
-// ==================== GLOBAL VARIABLES ====================
-let allRestaurants = [];
-let filteredRestaurants = [];
-let currentCarouselIndex = 0;
-let carouselInterval;
-const CAROUSEL_INTERVAL = 5000; // 5 seconds
+const API_BASE_URL = 'http://localhost:8080';
 
-// ==================== PAGE LOAD ====================
-document.addEventListener('DOMContentLoaded', async () => {
-    // Check if user is logged in
-   // if (!isLoggedin()) {
-     //   window.location.href = '/auth/login';
-       // return;
-    //}
-
-    // Load all restaurants
-    await loadAllRestaurants();
-
-    // Update user info in header
-    updateUserInfo();
-
-    // Populate company filter dropdown
-    populateCompanyFilter();
-
-    // Setup event listeners for filters
-    setupFilterListeners();
-
-    // Initialize carousel with available restaurants
-    await initializeCarousel();
-});
-
-// ==================== LOAD RESTAURANTS ====================
-async function loadAllRestaurants() {
-    try {
-        const response = await apiFetch('localhost:8080/restaurants/getAll');
-        if (!response.ok) {
-            throw new Error('Failed to load restaurants');
-        }
-        allRestaurants = await response.json();
-        filteredRestaurants = [...allRestaurants]; // fills up, populates
-        displayRestaurants(filteredRestaurants);
-    } catch (error) {
-        console.error('Error loading restaurants:', error);
-        showAlert('Failed to load restaurants. Please try again.');
-    }
-}
-
-// ==================== USER INFO ====================
-function updateUserInfo() {
+// Decode JWT and extract username from 'sub' claim
+function decodeJWT() {
     const token = localStorage.getItem('token');
-    if (token) {
-        try {
-            // Decode JWT to extract username
-            const decoded = decodeJWT(token);
-            const username = decoded.sub || decoded.username || 'User';
-            document.getElementById('userName').textContent = username;
-        } catch (error) {
-            console.error('Error decoding token:', error);
-            document.getElementById('userName').textContent = 'User';
-        }
-    } else {
-        document.getElementById('userName').textContent = 'Guest';
-    }
-}
+    if (!token) return null;
 
-/**
- * Simple JWT decoder (handles basic claims)
- */
-function decodeJWT(token) {
     try {
         const parts = token.split('.');
-        if (parts.length !== 3) throw new Error('Invalid token');
-
-        const payload = parts[1];
-        const decoded = JSON.parse(atob(payload));
-        return decoded;
+        const decoded = JSON.parse(atob(parts[1]));
+        return decoded.sub; // 'sub' claim contains the username
     } catch (error) {
-        console.error('JWT decode error:', error);
-        return {};
+        console.error('Error decoding JWT:', error);
+        return null;
     }
 }
 
-// ==================== FILTER SETUP ====================
-function setupFilterListeners() {
-    document.getElementById('searchBar').addEventListener('input', applyFilters);
-    document.getElementById('sortBySelect').addEventListener('change', applyFilters);
-    document.getElementById('serviceTypeFilter').addEventListener('change', applyFilters);
-    document.getElementById('companyFilter').addEventListener('change', applyFilters);
-    document.getElementById('availableCheckbox').addEventListener('change', applyFilters);
+// Check if user is authenticated
+function isAuthenticated() {
+    return localStorage.getItem('token') !== null;
 }
 
-/**
- * Populate company filter dropdown from loaded restaurants
- */
-function populateCompanyFilter() {
-    const companySet = new Set();
-    allRestaurants.forEach(restaurant => {
-        if (restaurant.subOf && restaurant.subOf > 0) {
-            companySet.add(restaurant.subOf);
-        }
+// Fetch with optional token
+async function apiFetch(endpoint, options = {}) {
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+    const token = localStorage.getItem('token');
+
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, {
+        ...options,
+        headers
     });
 
-    const companyFilter = document.getElementById('companyFilter');
-    // Clear existing options except the first one
-    while (companyFilter.options.length > 1) {
-        companyFilter.remove(1);
+    if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
-    companySet.forEach(companyId => {
-        const option = document.createElement('option');
-        option.value = companyId;
-        option.textContent = `Company ${companyId}`; // TODO: Replace with actual company names if available
-        companyFilter.appendChild(option);
-    });
+    return response.json();
 }
 
-// ==================== FILTER & SORT LOGIC ====================
-async function applyFilters() {
-    let filtered = [...allRestaurants];
+// Load all restaurants (guests allowed)
+async function loadRestaurants() {
+    try {
+        const restaurants = await apiFetch('/restaurants/getAll');
 
-    // 1. Search filter (by name)
-    const searchTerm = document.getElementById('searchBar').value.toLowerCase().trim();
-    if (searchTerm) {
-        filtered = filtered.filter(r =>
-            r.name.toLowerCase().includes(searchTerm)
-        );
-    }
-
-    // 2. Service type filter
-    const serviceType = document.getElementById('serviceTypeFilter').value;
-    if (serviceType) {
-        filtered = filtered.filter(r => r.serviceType === serviceType);
-    }
-
-    // 3. Company filter
-    const company = document.getElementById('companyFilter').value;
-    if (company && company !== '0') {
-        filtered = filtered.filter(r => r.subOf == company);
-    }
-
-    // 4. Available checkbox (check for available tables)
-    const availableOnly = document.getElementById('availableCheckbox').checked;
-    if (availableOnly) {
-        filtered = await filterByAvailability(filtered);
-    }
-
-    // 5. Sorting
-    const sortBy = document.getElementById('sortBySelect').value;
-    filtered = applySorting(filtered, sortBy);
-
-    // Update results
-    filteredRestaurants = filtered;
-    displayRestaurants(filteredRestaurants);
-}
-
-/**
- * Filter restaurants that have available tables
- */
-async function filterByAvailability(restaurants) {
-    const availableRestaurants = [];
-
-    for (const restaurant of restaurants) {
-        try {
-            const response = await apiFetch(`http://localhost:8080/restaurants/${restaurant.id}/tables/available/count`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data > 0) {
-                    availableRestaurants.push(restaurant);
-                }
-            }
-        } catch (error) {
-            console.error(`Error checking availability for restaurant ${restaurant.id}:`, error);
+        if (!window.allRestaurants || window.allRestaurants.length === 0) {
+            window.allRestaurants = restaurants;
         }
-    }
 
-    return availableRestaurants;
+        displayRestaurants(restaurants);
+    } catch (error) {
+        console.error('Error loading restaurants:', error);
+    }
 }
 
-/**
- * Apply sorting to restaurants
- */
-function applySorting(restaurants, sortBy) {
-    const sorted = [...restaurants];
-
-    switch (sortBy) {
-        case 'highest_rated':
-            sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-            break;
-        case 'lowest_rated':
-            sorted.sort((a, b) => (a.rating || 0) - (b.rating || 0));
-            break;
-        case 'least_expensive':
-            sorted.sort((a, b) => (a.priceRange || 0) - (b.priceRange || 0));
-            break;
-        case 'most_expensive':
-            sorted.sort((a, b) => (b.priceRange || 0) - (a.priceRange || 0));
-            break;
-        default:
-            break;
-    }
-
-    return sorted;
-}
-
-// ==================== DISPLAY RESTAURANTS ====================
-function displayRestaurants(restaurants) { // retrieves and sorts the restaurants into the cards
+// Display restaurants in grid
+function displayRestaurants(restaurants) {
     const container = document.getElementById('restaurantCards');
-    container.innerHTML = ''; // Clear existing cards
-
-    if (restaurants.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #999;">No restaurants found.</p>';
+    if (!container) {
+        console.error('Element #restaurantCards not found');
         return;
     }
 
-    const template = document.getElementById('restaurantCardTemplate');
-
-    restaurants.forEach(restaurant => {
-        const clone = template.content.cloneNode(true);
-
-        // Populate card data
-        const card = clone.querySelector('.restaurant-card');
-        card.setAttribute('data-id', restaurant.id);
-
-        clone.querySelector('.restaurant-image').src = restaurant.image || '/images/placeholder.png';
-        clone.querySelector('.restaurant-image').alt = restaurant.name;
-        clone.querySelector('.restaurant-title').textContent = restaurant.name;
-        clone.querySelector('.restaurant-description').textContent = restaurant.description || 'No description available';
-        clone.querySelector('.restaurant-rating').textContent = (restaurant.rating || 0).toFixed(1);
-
-        // Add click event to navigate to detail page
-        card.addEventListener('click', () => {
-            navigateToRestaurantDetail(restaurant.id);
-        });
-
-        container.appendChild(clone);
-    });
+    container.innerHTML = restaurants.map(restaurant => `
+        <div class="restaurant-card" onclick="navigateToRestaurant(${restaurant.id})">
+            <h3>${restaurant.name}</h3>
+            <p>${restaurant.description}</p>
+            <p>Rating: ${restaurant.rating}</p>
+            <p>Price Range: ${restaurant.priceRange}</p>
+        </div>
+    `).join('');
 }
 
-/**
- * Navigate to restaurant detail page
- */
-function navigateToRestaurantDetail(restaurantId) {
-    window.location.href = `http://localhost:8080/details.html?id=${restaurantId}`;
-    // TODO: Create restaurant-detail.html page
+// Navigate to restaurant detail page
+function navigateToRestaurant(id) {
+    window.location.href = `./restaurant-detail.html?id=${id}`;
 }
 
-// ==================== CAROUSEL ====================
-async function initializeCarousel() {
+// Search bar functionality (guests allowed)
+async function handleSearch() {
+    const searchInput = document.getElementById('searchBar')?.value || '';
+
+    if (!searchInput.trim()) {
+        loadRestaurants();
+        return;
+    }
+
     try {
-        // Get restaurants with available tables
-        const availableRestaurants = await filterByAvailability(allRestaurants);
+        const results = await apiFetch(`/restaurants/getByName/${encodeURIComponent(searchInput)}`);
+        displayRestaurants(results);
+    } catch (error) {
+        console.error('Search error:', error);
+        alert('No restaurants found');
+    }
+}
 
-        if (availableRestaurants.length === 0) {
-            console.log('No restaurants with available tables for carousel');
-            return;
+// Filter by service type (guests allowed)
+async function filterByServiceType(serviceType) {
+    try {
+        const results = await apiFetch(`/restaurants/getByServiceType/${serviceType}`);
+        displayRestaurants(results);
+    } catch (error) {
+        console.error('Filter error:', error);
+    }
+}
+
+// Filter by price range (guests allowed)
+async function filterByPrice(minPrice, maxPrice) {
+    try {
+        const aboveMin = await apiFetch(`/restaurants/getPriceRangeWithin/${maxPrice}`);
+        displayRestaurants(aboveMin);
+    } catch (error) {
+        console.error('Price filter error:', error);
+    }
+}
+
+// Filter by rating (guests allowed)
+async function filterByRating(minRating) {
+    try {
+        const results = await apiFetch(`/restaurants/getByRating/${minRating}`);
+        displayRestaurants(results);
+    } catch (error) {
+        console.error('Rating filter error:', error);
+    }
+}
+
+// Get user profile (authenticated users only)
+async function getUserProfile() {
+    if (!isAuthenticated()) {
+        console.warn('Not authenticated');
+        return null;
+    }
+
+    try {
+        const username = decodeJWT();
+        if (!username) {
+            console.error('No username found in token');
+            return null;
         }
 
-        allRestaurants = availableRestaurants; // Update for carousel use
-        currentCarouselIndex = 0;
-        displayCarouselSlide(allRestaurants[currentCarouselIndex]);
-
-        // Show carousel
-        document.getElementById('carousel').style.display = 'block';
-
-        // Setup autoplay
-        startCarouselAutoplay(allRestaurants);
+        const profile = await apiFetch('/auth/testGetUsers');
+        return profile;
     } catch (error) {
-        console.error('Error initializing carousel:', error);
+        console.error('Error getting user profile:', error);
+        return null;
     }
 }
 
-/**
- * Display a single carousel slide
- */
-function displayCarouselSlide(restaurant) {
-    if (!restaurant) return;
-
-    document.getElementById('carouselImage').src = restaurant.image || '/images/placeholder.png';
-    document.getElementById('carouselImage').alt = restaurant.name;
-    document.getElementById('carouselTitle').textContent = restaurant.name;
-    document.getElementById('carouselDescription').textContent = restaurant.description || 'No description available';
-    document.getElementById('carouselRating').textContent = (restaurant.rating || 0).toFixed(1);
-}
-
-/**
- * Start carousel autoplay
- */
-function startCarouselAutoplay(restaurants) {
-    if (carouselInterval) {
-        clearInterval(carouselInterval);
-    }
-
-    carouselInterval = setInterval(() => {
-        currentCarouselIndex = (currentCarouselIndex + 1) % restaurants.length;
-        displayCarouselSlide(restaurants[currentCarouselIndex]);
-    }, CAROUSEL_INTERVAL);
-}
-
-/**
- * Stop carousel autoplay (useful if needed)
- */
-function stopCarouselAutoplay() {
-    if (carouselInterval) {
-        clearInterval(carouselInterval);
+// Toggle login/logout
+function handleAuthButton() {
+    if (isAuthenticated()) {
+        logout();
+    } else {
+        navigateToLogin();
     }
 }
 
-// ==================== LOGOUT ====================
+// Logout
+function logout() {
+    localStorage.removeItem('token');
+    updateAuthUI();
+    window.location.href = './index.html';
+}
+
+// Navigate to login page
+function navigateToLogin() {
+    window.location.href = './login.html'; // Adjust path based on your structure
+}
+
+// Update UI based on authentication status
+function updateAuthUI() {
+    const authButton = document.getElementById('logoutBtn'); // Button element
+    const userNameDisplay = document.getElementById('userName'); // Username display
+
+    if (isAuthenticated()) {
+        const username = decodeJWT();
+
+        // Show username
+        if (userNameDisplay) {
+            userNameDisplay.textContent = username;
+            userNameDisplay.style.display = 'block';
+        }
+
+        // Change button to "Logout"
+        if (authButton) {
+            authButton.textContent = 'Logout';
+            authButton.onclick = handleAuthButton;
+        }
+    } else {
+        // Hide username
+        if (userNameDisplay) {
+            userNameDisplay.textContent = '';
+            userNameDisplay.style.display = 'none';
+        }
+
+        // Change button to "Login"
+        if (authButton) {
+            authButton.textContent = 'Login';
+            authButton.onclick = handleAuthButton;
+        }
+    }
+}
+
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            logout(); // Uses function from jwt.js
-        });
-    }
+    loadRestaurants();
+    updateAuthUI();
 });
-
-// ==================== NOTIFICATIONS ====================
-function showAlert(message) {
-    const alertElement = document.getElementById('alertEvent');
-    const messageElement = document.getElementById('alertMessage');
-
-    if (alertElement && messageElement) {
-        messageElement.textContent = message;
-        alertElement.style.display = 'block';
-
-        // Auto-hide after 5 seconds
-        setTimeout(() => {
-            alertElement.style.display = 'none';
-        }, 5000);
-    }
-}
-
-// ==================== FOOTER ====================
-document.addEventListener('DOMContentLoaded', () => {
-    const currentYear = new Date().getFullYear();
-    const copyrightElement = document.getElementById('copyright');
-    if (copyrightElement) {
-        copyrightElement.textContent = `© ${currentYear} RestaurantBooking. All rights reserved.`;
-    }
-});
-
