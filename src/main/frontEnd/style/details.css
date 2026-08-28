@@ -1,4 +1,3 @@
-
 /* Restaurant Detail Page Styles */
 
 .detail-container {
@@ -188,89 +187,93 @@
     background-color: var(--primary-color, #CF0000);
     color: white;
     border-color: var(--primary-color, #CF0000);
+    box-shadow: 0 4px 12px rgba(207, 0, 0, 0.25);
 }
 
 .table-number {
-    font-weight: bold;
     font-size: 18px;
+    font-weight: bold;
+    color: inherit;
     margin-bottom: 8px;
 }
 
 .table-section {
     font-size: 14px;
-    color: #666;
+    color: inherit;
     margin-bottom: 8px;
-}
-
-.table-card.selected .table-section {
-    color: rgba(255, 255, 255, 0.8);
+    opacity: 0.8;
 }
 
 .table-capacity {
     font-size: 14px;
-    color: #999;
-}
-
-.table-card.selected .table-capacity {
-    color: rgba(255, 255, 255, 0.8);
+    color: inherit;
+    opacity: 0.7;
 }
 
 .placeholder {
-    grid-column: 1 / -1;
     text-align: center;
     color: #999;
-    padding: 40px;
+    padding: 40px 20px;
+    font-style: italic;
+    grid-column: 1 / -1;
 }
 
-/* Modal Styles */
+/* Modal Overlay */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: center;
     justify-content: center;
-    z-index: 999;
+    align-items: center;
+    z-index: 1000;
 }
 
 .modal-overlay.hidden {
     display: none;
 }
 
+/* Booking Modal */
 .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background-color: white;
     border-radius: 8px;
     padding: 40px;
     max-width: 500px;
-    width: 100%;
+    width: 90%;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
+    z-index: 1001;
 }
 
 .modal.hidden {
     display: none;
 }
 
+.modal-content {
+    width: 100%;
+}
+
 .modal h2 {
     color: var(--primary-color, #CF0000);
     margin-bottom: 25px;
+    font-size: 24px;
 }
 
 .booking-details {
-    background-color: #f9f9f9;
-    border-radius: 6px;
-    padding: 20px;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .booking-detail-row {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
 }
 
 .booking-detail-row:last-child {
@@ -283,25 +286,25 @@
 }
 
 .booking-detail-value {
-    color: #666;
-    text-align: right;
+    color: var(--secondary-color, #7D2F2F);
+    font-weight: 500;
 }
 
 .modal-actions {
     display: flex;
-    gap: 12px;
+    gap: 15px;
+    justify-content: flex-end;
 }
 
 .confirm-btn,
 .cancel-btn {
-    flex: 1;
-    padding: 14px 20px;
+    padding: 12px 24px;
     border: none;
     border-radius: 4px;
     font-size: 16px;
-    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
 }
 
 .confirm-btn {
@@ -326,58 +329,25 @@
 @media (max-width: 768px) {
     .restaurant-info {
         grid-template-columns: 1fr;
-        padding: 20px;
-    }
-
-    .restaurant-image-container {
-        height: 300px;
-    }
-
-    .restaurant-name {
-        font-size: 28px;
     }
 
     .booking-controls {
         grid-template-columns: 1fr;
     }
 
+    .restaurant-image-container {
+        height: 250px;
+    }
+
+    .restaurant-name {
+        font-size: 28px;
+    }
+
     .tables-list {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
 
-    .detail-container {
-        padding: 0 15px;
-    }
-
-    .booking-section {
-        padding: 20px;
-    }
-
     .modal {
-        padding: 30px 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .restaurant-name {
-        font-size: 24px;
-    }
-
-    .restaurant-meta {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .tables-list {
-        grid-template-columns: 1fr;
-    }
-
-    .booking-detail-row {
-        flex-direction: column;
-    }
-
-    .booking-detail-value {
-        text-align: left;
-        margin-top: 5px;
+        padding: 30px;
     }
 }
