@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadRestaurantDetails();
     } else {
         console.error('No restaurant ID provided');
-        window.location.href = '/index.html';
+        window.location.href = '/main.html';
     }
 
     // Set minimum date to today
@@ -78,7 +78,7 @@ function displayRestaurantInfo(restaurant) {
 function initializeEventListeners() {
     // Back button
     document.getElementById('backBtn').addEventListener('click', () => {
-        window.location.href = '/index.html';
+        window.location.href = '/main.html';
     });
 
     // Logout button
@@ -259,7 +259,7 @@ async function confirmBooking() {
 
         // Redirect to main page after 2 seconds
         setTimeout(() => {
-            window.location.href = '/index.html';
+            window.location.href = '/main.html';
         }, 2000);
     } catch (error) {
         console.error('Error confirming booking:', error);

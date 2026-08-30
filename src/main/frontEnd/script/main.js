@@ -57,6 +57,7 @@ async function loadRestaurants() {
         window.allRestaurants = restaurants;
         window.filteredRestaurants = [...restaurants];
         displayRestaurants(restaurants);
+        displayCarousel();
     } catch (error) {
         console.error('Error loading restaurants:', error);
         displayError('Failed to load restaurants');
@@ -64,32 +65,44 @@ async function loadRestaurants() {
 }
 
 
-/*
 function displayCarousel() {
-    const carouselContainer = document.querySelector('.carousel-items');
-    if (!carouselContainer || !window.allRestaurants) return;
+    const carousel = document.getElementById('carousel');
+    if (!carousel || !window.allRestaurants || window.allRestaurants.length === 0) return;
 
-    // Get top 5 highest rated restaurants
+    // Get top 3 highest rated restaurants
     const topRated = [...window.allRestaurants]
         .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-        .slice(0, 5);
+        .slice(0, 3);
 
-    if (topRated.length === 0) {
-        carouselContainer.innerHTML = '<p>No restaurants available</p>';
-        return;
+    if (topRated.length === 0) return;
+
+    let currentIndex = 0;
+
+    function showRestaurant(index) {
+        const restaurant = topRated[index];
+        document.getElementById('carouselImage').src = restaurant.image;
+        document.getElementById('carouselImage').alt = restaurant.name;
+        document.getElementById('carouselTitle').textContent = restaurant.name;
+        document.getElementById('carouselDescription').textContent = restaurant.description || '';
+        document.getElementById('carouselRating').textContent = restaurant.rating || 'N/A';
+
+        // Make carousel visible
+        carousel.style.display = 'block';
     }
 
-    carouselContainer.innerHTML = topRated.map(restaurant => `
-        <div class="carousel-item" onclick="navigateToRestaurant(${restaurant.id})" style="cursor: pointer;">
-            <img src="${restaurant.image}" alt="${restaurant.name}" class="carousel-image">
-            <div class="carousel-info">
-                <h3>${restaurant.name}</h3>
-                <p class="carousel-rating">★ ${restaurant.rating || 'N/A'}</p>
-            </div>
-        </div>
-    `).join('');
+    // Show first restaurant
+    showRestaurant(0);
+
+    // Auto-rotate every 5 seconds
+    setInterval(() => {
+        currentIndex = (currentIndex + 1) % topRated.length;
+        showRestaurant(currentIndex);
+    }, 5000);
+
+    // Click to navigate
+    carousel.onclick = () => navigateToRestaurant(topRated[currentIndex].id);
 }
-*/
+
 
 // Display restaurants in grid
 function displayRestaurants(restaurants) {
@@ -131,7 +144,7 @@ function displayError(message) {
 
 // Navigate to restaurant detail page
 function navigateToRestaurant(id) {
-    window.location.href = `./restaurant-detail.html?id=${id}`;
+    window.location.href = `./details.html?id=${id}`;
 }
 
 // Apply all active filters

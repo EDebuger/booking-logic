@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <h1>Restaurant Booking</h1>
+        </div>
+        <nav class="nav">
+            <a href="main.html" class="nav-link">Home</a>
+            <a href="profile.html" class="nav-link active">Profile</a>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </nav>
+    </div>
+</header>
+
+<!-- Notification Banner -->
+<div id="notificationBanner" class="notification-banner hidden"></div>
+
+<!-- Main Content -->
+<main class="profile-container">
+    <!-- Profile Section -->
+    <section class="profile-section">
+        <h2>My Profile</h2>
+        <div class="profile-card">
+            <div class="profile-info">
+                <div class="info-group">
+                    <label>Name</label>
+                    <p id="userName">-</p>
+                </div>
+                <div class="info-group">
+                    <label>Email</label>
+                    <p id="userEmail">-</p>
+                </div>
+                <div class="info-group">
+                    <label>Phone</label>
+                    <p id="userPhone">-</p>
+                </div>
+                <div class="info-group">
+                    <label>Role</label>
+                    <p id="userRole">-</p>
+                </div>
+                <div class="info-group">
+                    <label>Member Since</label>
+                    <p id="memberSince">-</p>
+                </div>
+                <div class="info-group">
+                    <label>Last Updated</label>
+                    <p id="updatedAt">-</p>
+                </div>
+            </div>
+            <button id="editProfileBtn" class="edit-btn">Edit Profile</button>
+        </div>
+    </section>
+
+    <!-- Booking History Section -->
+    <section class="bookings-section">
+        <div class="bookings-header">
+            <h2>My Bookings</h2>
+            <div class="sort-controls">
+                <label for="bookingSortSelect">Sort by:</label>
+                <select id="bookingSortSelect" class="sort-select">
+                    <option value="date-newest">Date (Newest First)</option>
+                    <option value="date-oldest">Date (Oldest First)</option>
+                    <option value="restaurant-a-z">Restaurant (A-Z)</option>
+                    <option value="restaurant-z-a">Restaurant (Z-A)</option>
+                    <option value="party-size">Party Size</option>
+                </select>
+            </div>
+        </div>
+        <div id="bookingsList" class="bookings-list">
+            <p class="loading">Loading bookings...</p>
+        </div>
+    </section>
+</main>
+
+<!-- Edit Profile Modal -->
+<div id="editModal" class="modal hidden">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Profile</h3>
+            <button id="closeModalBtn" class="close-btn">&times;</button>
+        </div>
+        <form id="editForm" class="edit-form">
+            <div class="form-group">
+                <label for="editUserName">Username</label>
+                <input type="text" id="editUserName" name="username" placeholder="Enter new username">
+            </div>
+            <div class="form-group">
+                <label for="editPhone">Phone</label>
+                <input type="tel" id="editPhone" name="phone" placeholder="Enter new phone">
+            </div>
+            <div class="form-group">
+                <label for="editPassword">New Password</label>
+                <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep current">
+            </div>
+            <div class="form-group">
+                <label for="currentPassword">Current Password <span class="required">*</span></label>
+                <input type="password" id="currentPassword" name="currentPassword" placeholder="Required to confirm changes" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" id="cancelEditBtn" class="cancel-btn">Cancel</button>
+                <button type="submit" class="confirm-btn">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="jwt.js"></script>
+<script src="profile.js"></script>
+</body>
+</html>

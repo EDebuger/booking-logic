@@ -64,7 +64,7 @@ public class UserController {
     /*---------------------------Setters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
-    @PostMapping("/users/{id}/validate-phone")
+    @PostMapping("/{id}/validate-phone")
     public HttpStatusCode validatePhoneChange(@PathVariable Long id, @Valid @RequestBody ChangeUserDto.ChangePhoneValidationDto dto) {
         return ResponseEntity.ok(userService.validatePhoneChange(
                 id, dto.getPhone(), dto.getCurrentPassword())).getStatusCode();
