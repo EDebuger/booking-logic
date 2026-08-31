@@ -25,18 +25,21 @@ async function login(username, password) {
     const response = await fetch("/auth/login", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({userName: "", password: ""})
+        body: JSON.stringify({userName: username, password: password})
     });
     if (!response.ok) {throw new Error("Wrong username or password");}
 
     const token = response.text();
     localStorage.setItem("token",token);
+    window.location.href = "/main.html";
 }
 
 // simplified, GETTERS
 const response = await fetch("http://localhost:8080/auth/testGetUsers");
+const user = response.json();
 
 const response = await fetch("http://localhost:8080/users/getAllUsers");
+const users = await response.json();
 
 // simplified, SETTERS
 const response = await fetch("http://localhost:8080/auth/register", {
@@ -50,7 +53,7 @@ const response = await fetch("http://localhost:8080/bookings/postBooking", {
 });
 
 //login/logout functions
-async function isLoggedin() {
+ function isLoggedin() {
     return localStorage.getItem("token") !== null;
 }
 
