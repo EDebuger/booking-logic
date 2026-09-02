@@ -4,12 +4,6 @@ let restaurantId;
 let selectedTable = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check authentication
-    if (!isLoggedin()) {
-        window.location.href = 'http://localhost:8080/auth/login';
-        return;
-    }
-
     // Initialize page
     updateUserInfo();
     initializeEventListeners();
@@ -19,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadRestaurantDetails();
     } else {
         console.error('No restaurant ID provided');
-        window.location.href = '/main.html';
+        window.location.href = 'http://localhost:8080/auth/main';
     }
 
     // Set minimum date to today
@@ -78,7 +72,7 @@ function displayRestaurantInfo(restaurant) {
 function initializeEventListeners() {
     // Back button
     document.getElementById('backBtn').addEventListener('click', () => {
-        window.location.href = '/main.html';
+        window.location.href = 'http://localhost:8080/auth/main';
     });
 
     // Logout button
@@ -109,7 +103,7 @@ async function loadAvailableTables() {
 
     try {
         const response = await apiFetch(
-            `http://localhost:8080/restaurants/${restaurantId}/tables/available?partySize=${partySize}&date=${date}`
+            `http://localhost:8080/restaurantTables/${restaurantId}/tables/best-fit/${restaurantId}/partySize=${partySize}&date=${date}`
         );
 
         if (!response.ok) {
@@ -227,6 +221,15 @@ function closeBookingModal() {
  * Confirm booking and send to backend
  */
 async function confirmBooking() {
+    // Check authentication before confirming booking
+    if (!isLoggedin()) {
+        showNotification('Please log in to confirm your booking', 'warning');
+        setTimeout(() => {
+            window.location.href = 'http://localhost:8080/auth/login';
+        }, 1500);
+        return;
+    }
+
     if (!selectedTable) return;
 
     const date = document.getElementById('dateInput').value;
@@ -259,7 +262,7 @@ async function confirmBooking() {
 
         // Redirect to main page after 2 seconds
         setTimeout(() => {
-            window.location.href = '/main.html';
+            window.location.href = 'http://localhost:8080/auth/main';
         }, 2000);
     } catch (error) {
         console.error('Error confirming booking:', error);

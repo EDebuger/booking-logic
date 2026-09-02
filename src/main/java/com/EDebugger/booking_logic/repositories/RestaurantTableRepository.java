@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Date;
 import java.util.List;
 
 @Repository
@@ -42,13 +44,16 @@ public interface RestaurantTableRepository extends JpaRepository<RestaurantTable
     @Query(value = """
         SELECT * FROM RestaurantTable
         WHERE restaurant_id = :restaurantId
-        AND is_available = true
+        AND is_available = 
+                (SELECT 1 FROM bookings WHERE booking_date=:date AND restaurant_name=
+                                                                         (SELECT 1 FROM restaurants WHERE name=:restaurantId))
         AND capacity >= :minCapacity
         ORDER BY capacity ASC
     """, nativeQuery = true)
     List<RestaurantTable> findAvailableTablesByCapacity(
             @Param("restaurantId") Long restaurantId,
-            @Param("minCapacity") Integer minCapacity
+            @Param("minCapacity") Integer minCapacity,
+            @Param("date") Date date
     );
 
     /**

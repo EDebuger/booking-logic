@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import com.EDebugger.booking_logic.services.JwtService;
 import com.EDebugger.booking_logic.services.UserService;
@@ -21,7 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/auth")
 public class AuthController {
 
@@ -39,12 +40,11 @@ public class AuthController {
         this.userDetailsService = userDetailsService;
     }
 
-
     @PostMapping("/register")
     public ResponseEntity<Object> insertUser(@Valid @RequestBody() CreateUserDto user) {
         try {
             user.setUserRole(Role.USER); // default;
-            UserProfileforUser savedUser = userService.createUser(user); // what we get back
+            UserProfileforUser savedUser = userService.createUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
@@ -57,8 +57,8 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(dto.getUserName(),dto.getPassword())
         );
         UserDetails userDetails = userDetailsService.loadUserByUsername(dto.getUserName());
-        String token = jwtService.generateToken(userDetails); // token is tied to user
-        return  ResponseEntity.ok(token); // you get the token
+        String token = jwtService.generateToken(userDetails);
+        return ResponseEntity.ok(token);
     }
 
     @GetMapping("/me")
@@ -74,5 +74,21 @@ public class AuthController {
     @PostMapping("/testRequest")
     public ResponseEntity<String> testPostRequest() {
         return ResponseEntity.ok("POST request successful");
+    }
+
+    // Page redirects
+    @GetMapping("/main")
+    public String getMainPage() {
+        return "redirect:/main.html";
+    }
+
+    @GetMapping("/details")
+    public String getDetailPage() {
+        return "redirect:/details.html";
+    }
+
+    @GetMapping("/profile")
+    public String getProfilePage() {
+        return "redirect:/profile.html";
     }
 }

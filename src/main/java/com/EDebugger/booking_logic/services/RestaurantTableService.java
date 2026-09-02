@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.EDebugger.booking_logic.repositories.RestaurantRepository;
 import com.EDebugger.booking_logic.repositories.RestaurantTableRepository;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,11 +44,11 @@ public class RestaurantTableService {
     }
 
      // Find the best table based on party size.
-    public Optional<RestaurantTableDTO> findBestTableForParty(Long restaurantId, Integer partySize) {
-        System.out.println("Finding best table for party of {} at restaurant: {}"+ partySize+ restaurantId);
+    public Optional<RestaurantTableDTO> findBestTableForParty(Long restaurantId, Integer partySize, Date date) {
+        System.out.println("Finding best table for party of "+partySize+" at restaurant: "+restaurantId);
 
         List<RestaurantTable> availableTables =
-                tableRepository.findAvailableTablesByCapacity(restaurantId, partySize);
+                tableRepository.findAvailableTablesByCapacity(restaurantId, partySize, date);
 
         if (availableTables.isEmpty()) {
             System.out.println("No available tables for party size {} at restaurant {}"+ partySize+ restaurantId);

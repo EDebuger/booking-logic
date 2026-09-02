@@ -73,7 +73,7 @@ public class BookingController {
     /*---------------------------Posters------------------------------------------*/
     /*----------------------------------------------------------------------------*/
 
-    @PreAuthorize("hasRole('USER')")
+    //@PreAuthorize("hasRole('USER')")
     @PostMapping("/postBooking") // create booking for user
     public @ResponseBody ResponseEntity<BookingUserDto> createBooking(@Valid @RequestBody CreateBookingDto createBookingDto) {
         BookingUserDto created = bookingService.createBooking(createBookingDto);

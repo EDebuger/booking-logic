@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.EDebugger.booking_logic.services.RestaurantTableService;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,9 +44,10 @@ public class RestaurantTableController {
 
     // Find best table for a party size
     @PreAuthorize("hasRole('USER')")
-    @GetMapping("/best-fit")
+    @GetMapping("/best-fit/:restaurantId/:partySize/:date")
     public ResponseEntity<?> findBestTable(
-            @PathVariable Long restaurantId,
+            @PathVariable(value = "restaurantId") Long restaurantId,
+            @RequestParam Date date,
             @RequestParam Integer partySize) {
 
         if (partySize == null || partySize <= 0) {
@@ -54,7 +56,7 @@ public class RestaurantTableController {
         }
 
         Optional<RestaurantTableDTO> table =
-                tableService.findBestTableForParty(restaurantId, partySize);
+                tableService.findBestTableForParty(restaurantId, partySize, date);
 
         if (table.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

@@ -1,6 +1,6 @@
-// connect to api
+// ===== CORE API FUNCTIONS =====
 
-// login that recieves token, afterwards the rest are available
+// Connect to API with automatic token attachment
 async function apiFetch(url, options = {}) {
     const token = localStorage.getItem("token");
 
@@ -12,6 +12,7 @@ async function apiFetch(url, options = {}) {
             ...options.headers
         }
     });
+
     if (response.status === 401) {
         localStorage.removeItem("token");
         window.location.href = "/main.html";
@@ -20,44 +21,91 @@ async function apiFetch(url, options = {}) {
     return response;
 }
 
-//login
+// Decode JWT token to extract user info (e.g., user ID from 'sub' claim)
+function decodeToken(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error('Error decoding token:', error);
+        throw error;
+    }
+}
+
+// ===== AUTHENTICATION FUNCTIONS =====
+
+// Login - receives username/password, stores token
 async function login(username, password) {
     const response = await fetch("/auth/login", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({userName: username, password: password})
     });
-    if (!response.ok) {throw new Error("Wrong username or password");}
 
-    const token = response.text();
-    localStorage.setItem("token",token);
-    window.location.href = "/main.html";
+    if (!response.ok) {
+        throw new Error("Wrong username or password");
+    }
+
+    const token = await response.text();
+    localStorage.setItem("token", token);
+    window.location.href = "../index/main.html";
 }
 
-// simplified, GETTERS
-const response = await fetch("http://localhost:8080/auth/testGetUsers");
-const user = response.json();
-
-const response = await fetch("http://localhost:8080/users/getAllUsers");
-const users = await response.json();
-
-// simplified, SETTERS
-const response = await fetch("http://localhost:8080/auth/register", {
-    method: "POST",
-    body: JSON.stringify(newUser),
-});
-
-const response = await fetch("http://localhost:8080/bookings/postBooking", {
-    method: "POST",
-    body: JSON.stringify(newBooking)
-});
-
-//login/logout functions
- function isLoggedin() {
+// Check if user is logged in
+function isLoggedin() {
     return localStorage.getItem("token") !== null;
 }
 
-async function logout() {
+// Logout - clear token and redirect
+function logout() {
     localStorage.removeItem("token");
-    window.location.href = "/main.html";
+    window.location.href = "../index/main.html";
+}
+
+// ===== API HELPER FUNCTIONS =====
+
+// Register new user
+async function register(newUser) {
+    const response = await apiFetch("/auth/register", {
+        method: "POST",
+        body: JSON.stringify(newUser)
+    });
+
+    if (!response.ok) {
+        throw new Error("Registration failed");
+    }
+
+    return await response.json();
+}
+
+// Get all users (authenticated)
+async function getAllUsers() {
+    const response = await apiFetch("http://localhost:8080/users/getAllUsers");
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch users");
+    }
+
+    return await response.json();
+}
+
+// Create booking (authenticated)
+async function postBooking(newBooking) {
+    const response = await apiFetch("http://localhost:8080/bookings/postBooking", {
+        method: "POST",
+        body: JSON.stringify(newBooking)
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to create booking");
+    }
+
+    return await response.json();
 }

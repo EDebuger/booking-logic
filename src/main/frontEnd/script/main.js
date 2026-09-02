@@ -254,12 +254,12 @@ function handleAuthButton() {
 function logout() {
     localStorage.removeItem('token');
     updateAuthUI();
-    window.location.href = './index.html';
+    window.location.href = 'http://localhost:8080/auth/main';
 }
 
 // Navigate to login page
 function navigateToLogin() {
-    window.location.href = './login.html';
+    window.location.href = 'http://localhost:8080/auth/login';
 }
 
 // Update UI based on authentication status
